@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "784654783271",
+    "project_id": "appetite-demo",
+    "storage_bucket": "appetite-demo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784654783271:android:ff238867f82f4dc0470f02",
+        "android_client_info": {
+          "package_name": "com.project.appetite_demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784654783271-m31tkvgf4lelpoeupuon2d1osq8thj4e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.appetite_demo",
+            "certificate_hash": "f8ae1e5db2a61a12569f3e3257aa35e5a3330da5"
+          }
+        },
+        {
+          "client_id": "784654783271-ceja508tr8b9rr4l1ekv297corqs16d4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGDtn88-oXXmneTA_I10NZbrhoEjb4asI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784654783271-ceja508tr8b9rr4l1ekv297corqs16d4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
