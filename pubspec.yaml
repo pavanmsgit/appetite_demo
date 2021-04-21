@@ -24,10 +24,10 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
+  bubbled_navigation_bar: ^0.0.3
 
 
   #FIREBASE PLUGINS
@@ -71,7 +71,17 @@ dev_dependencies:
 flutter:
 
 
+
   uses-material-design: true
 
   assets:
-    - assets/
+    - assets/logo.png
+    - assets/logo2.png
+    - assets/images/b4u.png
+    - assets/images/biryanihouse.png
+    - assets/images/Burgers.jpg
+    - assets/images/coffee.jpg
+    - assets/images/Pizza.jpg
+    - assets/images/siddhushop.png
+    - assets/images/grocery.png
+    - assets/googleLogo.png
