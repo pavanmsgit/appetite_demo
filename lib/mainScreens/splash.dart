@@ -24,16 +24,14 @@ class Splash extends StatelessWidget {
               ],
             ),
           ),
-
           Padding(
             padding: EdgeInsets.only(bottom: 20),
           ),
           Center(
-
               child: CircularProgressIndicator(
                 backgroundColor: primary,
-            valueColor: AlwaysStoppedAnimation<Color>(secondary),
-          ))
+                valueColor: AlwaysStoppedAnimation<Color>(secondary),
+              ))
         ],
       ),
     );

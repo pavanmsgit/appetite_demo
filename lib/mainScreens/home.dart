@@ -32,18 +32,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     photoUrl = data[3];
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
-
     return SafeArea(child: Scaffold(appBar: AppBar(
       backgroundColor: secondary,
       title: Text('Home'),
     ),));
-
   }
 }
+
+
 
 
