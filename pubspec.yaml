@@ -29,6 +29,11 @@ dependencies:
   cupertino_icons: ^1.0.0
   bubbled_navigation_bar: ^0.0.3
 
+  animated_bottom_navigation_bar: ^0.3.2
+  auto_size_text: ^2.1.0
+
+
+
 
   #FIREBASE PLUGINS
   firebase_auth: ^0.18.0+1
@@ -38,17 +43,25 @@ dependencies:
   firebase_storage: ^4.0.0
   firebase_core: ^0.5.0
 
+  cloud_firestore_web: ^0.2.0+1
 
+
+
+  bloc_pattern:
+  rxdart:
   flutter_phoenix: ^0.1.0
   provider: ^4.3.2+1
 
   progress_dialog: ^1.2.4
 
   #STORAGE AND SHARED PREFERENCES
-  shared_preferences: ^0.5.10
+  shared_preferences: ^2.0.5
 
 
-  google_fonts: ^1.1.0
+
+
+
+
 
 
 
@@ -75,13 +88,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/logo.png
-    - assets/logo2.png
-    - assets/images/b4u.png
-    - assets/images/biryanihouse.png
-    - assets/images/Burgers.jpg
-    - assets/images/coffee.jpg
-    - assets/images/Pizza.jpg
-    - assets/images/siddhushop.png
-    - assets/images/grocery.png
-    - assets/googleLogo.png
+    - assets/
+    - assets/images/

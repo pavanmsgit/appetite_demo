@@ -1,20 +1,15 @@
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:appetite_demo/auth/googleSignIn.dart';
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/models/FoodModel.dart';
+import 'package:appetite_demo/subPages/accountPage.dart';
+import 'package:appetite_demo/subPages/homePage.dart';
+import 'package:appetite_demo/subPages/notificationPage.dart';
+import 'package:appetite_demo/subPages/orderPage.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:appetite_demo/Data/FoodData.dart';
-import 'package:appetite_demo/widgets/FoodCategory.dart';
-import 'package:appetite_demo/widgets/SearchBar.dart';
-import 'package:appetite_demo/widgets/FoodBought.dart';
-import 'package:appetite_demo/Pages/orderPage.dart';
-import 'package:appetite_demo/Pages/notificationPage.dart';
-import 'package:appetite_demo/Pages/mapsPage.dart';
-import 'package:appetite_demo/Pages/profilePage.dart';
-import 'package:bubbled_navigation_bar/bubbled_navigation_bar.dart';
-import 'package:cupertino_icons/cupertino_icons.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -22,32 +17,33 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  int currentIndex = 0;
-  List<Widget> pages;
-  Widget currentPage;
-  Home homePage;
-  OrderPage orderPage;
-  MapsPage mapsPage;
-  NotificationPage notificationPage;
-  ProfilePage profilePage;
+  int _selectedPageIndex = 0;
 
   List<String> data;
   String uid, name, email, photoUrl;
 
+
+  //INTIALIZE PAGE WITH USER DATA
   @override
   void initState() {
     getUserData();
     super.initState();
-    super.initState();
-    homePage = Home();
-    orderPage = OrderPage();
-    mapsPage = MapsPage();
-    notificationPage = NotificationPage();
-    profilePage = ProfilePage();
-    pages = [homePage, orderPage, mapsPage, notificationPage, profilePage];
-    currentPage = homePage;
   }
 
+  final autoSizeGroup = AutoSizeGroup();
+  CurvedAnimation curve;
+
+  //SWITCHING PAGES FOR MAIN SCREEN
+  void _selectPage(int index) {
+    setState(() {
+      _selectedPageIndex = index;
+      print(_selectedPageIndex);
+      print('hello');
+    });
+  }
+
+
+  //CHECKING USER DATA
   getUserData() async {
     data = await UserData().getUserData();
     UserData().getUserData().then((result) {
@@ -60,133 +56,66 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     photoUrl = data[3];
   }
 
-  final List<FoodData> _foods = foods;
+
+  //ICON LIST FOR BOTTOM NAVIGATION BAR
+  final iconList = <IconData>[
+    Icons.home,
+    Icons.search_rounded,
+    Icons.history,
+    Icons.person,
+  ];
+
+  //LIST OF PAGES WHICH WILL BE SWITCHED WITH THE HELP OF BOTTOM NAVIGATION BAR
+  final List<Widget> _pageOption = [
+    HomePage(),
+    SearchPage(),
+    OrderPage(),
+    AccountPage()
+  ];
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
     return Scaffold(
-      bottomNavigationBar: BubbledNavigationBar(
-        defaultBubbleColor: Colors.blue,
-        onTap: (index) {
-          // handle tap
-        },
-        items: <BubbledNavigationBarItem>[
-          BubbledNavigationBarItem(
-            icon: Icon(CupertinoIcons.home, size: 30, color: Colors.red),
-            activeIcon:
-                Icon(CupertinoIcons.home, size: 30, color: Colors.white),
-            title: Text(
-              'Home',
-              style: TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          ),
-          BubbledNavigationBarItem(
-            icon: Icon(CupertinoIcons.shopping_cart,
-                size: 30, color: Colors.purple),
-            activeIcon: Icon(CupertinoIcons.shopping_cart,
-                size: 30, color: Colors.white),
-            title: Text(
-              'Order',
-              style: TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          ),
-          BubbledNavigationBarItem(
-            icon: Icon(CupertinoIcons.map, size: 30, color: Colors.teal),
-            activeIcon: Icon(CupertinoIcons.map, size: 30, color: Colors.white),
-            title: Text(
-              'Map',
-              style: TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          ),
-          BubbledNavigationBarItem(
-            icon: Icon(CupertinoIcons.bell, size: 30, color: Colors.deepOrange),
-            activeIcon:
-                Icon(CupertinoIcons.bell_solid, size: 30, color: Colors.white),
-            title: Text(
-              'Notification',
-              style: TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          ),
-          BubbledNavigationBarItem(
-            icon: Icon(CupertinoIcons.profile_circled,
-                size: 30, color: Colors.cyan),
-            activeIcon: Icon(CupertinoIcons.profile_circled,
-                size: 30, color: Colors.white),
-            title: Text(
-              'Profile',
-              style: TextStyle(color: Colors.white, fontSize: 12),
-            ),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: EdgeInsets.only(left: 20.0, top: 50.0, right: 20.0),
-        children: <Widget>[
-          Center(
-            child: Image.asset(
-              "assets/logo2.png",
-              width: 200,
-              height: 80,
-              fit: BoxFit.contain,
-            ),
-          ),
-          SearchBar(),
-          SizedBox(
-            height: 15.0,
-          ),
-          Text(
-            "What do you want to eat today?",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          FoodCategory(),
-          SizedBox(
-            height: 10.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Trending Restaurants",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: Text(
-                  "View All",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                      color: Colors.orangeAccent),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 20.0,
-          ),
-          Column(
-            children: _foods.map(buildFoodBought).toList(),
-          )
-        ],
-      ),
-    );
-  }
 
-  Widget buildFoodBought(FoodData food) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 20.0),
-      child: BoughtFood(
-        imagePath: food.imagePath,
-        id: food.id,
-        name: food.name,
-        price: food.price,
-        discount: food.discount,
-        ratings: food.ratings,
-        category: food.category,
+      //ASSIGNS DIFFERENT COMPONENTS WHICH ARE MENTIONED IN THE LIST OF WIDGETS _pageOption.
+      body: Container(child: _pageOption[_selectedPageIndex]),
+
+
+      //FAB BUTTON WHICH ACTS AS CART BUTTON
+      floatingActionButton: FloatingActionButton(
+
+        backgroundColor: secondary,
+        child: Icon(
+          Icons.shopping_cart,
+          color: tertiary,
+        ),
+        onPressed: () {
+          print('Floating Action Button Pressed');
+        },
+      ),
+
+      //POSITION OF CART BUTTON
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      //BNB WITH FOUR OPTIONS
+      bottomNavigationBar: AnimatedBottomNavigationBar(
+        icons: iconList,
+        backgroundColor: tertiary,
+        activeColor: secondary,
+        inactiveColor: Colors.white,
+        activeIndex: _selectedPageIndex,
+        gapLocation: GapLocation.center,
+        notchSmoothness: NotchSmoothness.softEdge,
+        leftCornerRadius: 0,
+        rightCornerRadius: 0,
+        onTap: (index) => setState(
+          () => _selectPage(index),
+        ),
       ),
     );
   }
 }
+
+
+
