@@ -1,9 +1,11 @@
 import 'package:appetite_demo/auth/googleSignIn.dart';
+import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/mainScreens/home.dart';
 import 'package:appetite_demo/mainScreens/login.dart';
 import 'package:appetite_demo/mainScreens/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
 
@@ -26,10 +28,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        builder: EasyLoading.init(),
         debugShowCheckedModeBanner: false,
         title: 'Appetite',
         theme: ThemeData(
-          primaryColor: Color(0xFF321833),
+          primaryColor: tertiary,
         ),
         home: Phoenix(child: ScreensController()));
   }

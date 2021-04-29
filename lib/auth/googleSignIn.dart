@@ -1,5 +1,6 @@
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/auth/userModel.dart';
+import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/helpers/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -115,17 +116,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-/*
-void createUser({String id, String name, String email, String photoUrl}) {
-  _userServices.createUser({
-    "accountStatus": 1,
-    "authId": id,
-    "email": email,
-    "name": name,
-    "profileUrl": photoUrl
-  });
-}
-*/
+
 
   void signOutGoogle() async {
     print('yes signed out');
@@ -137,7 +128,7 @@ void createUser({String id, String name, String email, String photoUrl}) {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Color(0xFF321833),
+        backgroundColor: tertiary,
         title: Text(
           "Confirm Log out?",
           style: TextStyle(color: Colors.white),

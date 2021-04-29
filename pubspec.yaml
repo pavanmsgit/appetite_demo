@@ -51,8 +51,14 @@ dependencies:
   rxdart:
   flutter_phoenix: ^0.1.0
   provider: ^4.3.2+1
+  toggle_switch: ^0.1.9
+  fluttertoast: ^8.0.6
+  flutter_easyloading: ^3.0.0
+  intl:
+
 
   progress_dialog: ^1.2.4
+
 
   #STORAGE AND SHARED PREFERENCES
   shared_preferences: ^2.0.5

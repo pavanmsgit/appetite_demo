@@ -4,7 +4,7 @@ import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/subPages/accountPage.dart';
 import 'package:appetite_demo/subPages/homePage.dart';
-import 'package:appetite_demo/subPages/notificationPage.dart';
+import 'package:appetite_demo/subPages/searchPage.dart';
 import 'package:appetite_demo/subPages/orderPage.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
@@ -82,12 +82,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       body: Container(child: _pageOption[_selectedPageIndex]),
 
 
-      //FAB BUTTON WHICH ACTS AS CART BUTTON
+      ///CART FAB BUTTON
       floatingActionButton: FloatingActionButton(
 
         backgroundColor: secondary,
         child: Icon(
-          Icons.shopping_cart,
+          Icons.location_pin,
           color: tertiary,
         ),
         onPressed: () {
@@ -95,10 +95,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         },
       ),
 
-      //POSITION OF CART BUTTON
+      ///POSITION OF CART BUTTON
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-      //BNB WITH FOUR OPTIONS
+      ///BNB WITH FOUR OPTIONS
       bottomNavigationBar: AnimatedBottomNavigationBar(
         icons: iconList,
         backgroundColor: tertiary,
@@ -106,7 +106,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         inactiveColor: Colors.white,
         activeIndex: _selectedPageIndex,
         gapLocation: GapLocation.center,
-        notchSmoothness: NotchSmoothness.softEdge,
+        notchSmoothness: NotchSmoothness.defaultEdge,
         leftCornerRadius: 0,
         rightCornerRadius: 0,
         onTap: (index) => setState(
