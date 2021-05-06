@@ -1,5 +1,6 @@
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/appBarDefault.dart';
+import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/models/shopModel.dart';
@@ -139,63 +140,17 @@ class _OrderPageState extends State<OrderPage> {
               if (snapshot.hasData) {
                 return CustomScrollView(
                   slivers: <Widget>[
-                    SliverAppBar(
-                      floating: true,
-                      stretch: false,
-                      leading: Container(),
-                      flexibleSpace: Container(
-                        margin: EdgeInsets.only(bottom: 10),
-                        // It will cover 20% of our total height
-                        height: size.height * 0.6,
-                        child: Stack(
-                          children: <Widget>[
-                            Container(
-                              height: size.height * 0.11,
-                              decoration: BoxDecoration(
-                                color: tertiary,
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(40),
-                                  bottomRight: Radius.circular(40),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 50,
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 0),
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                //height: 90,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(70),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      offset: Offset(0, 10),
-                                      blurRadius: 40,
-                                      color: secondary.withOpacity(0.23),
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: Image.asset(
-                                    "assets/logo2.png",
-                                    width: 100,
-                                    height: 50,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                    silverAppBarDefault(size),
+
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 35, top: 10, bottom: 10),
+                        child: Text(
+                          "Your Orders",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                       ),
-                      expandedHeight: 120,
-                      backgroundColor: Colors.transparent,
                     ),
 
                     ///LIST OF ITEMS
@@ -215,16 +170,7 @@ class _OrderPageState extends State<OrderPage> {
                   ],
                 );
               }
-              return Container(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(secondary))
-                  ],
-                ),
-              );
+              return LoadingPage();
             }),
 
         // resizeToAvoidBottomInset: false,
@@ -442,157 +388,3 @@ class _OrderPageState extends State<OrderPage> {
   }
 }
 
-/*  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Ordered Items List",
-          style: TextStyle(color: Colors.black, fontSize: 23.0),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 10.0,
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
-        children: <Widget>[
-          OrderCard(),
-          OrderCard(),
-          OrderCard(),
-        ],
-      ),
-      bottomNavigationBar: orderDetail(),
-    );
-  }
-*/
-
-/*  Widget orderDetail() {
-    return Container(
-      height: 220.0,
-      margin: EdgeInsets.only(top: 25.0, bottom: 16.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Card Total",
-                style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "\u20B9 33.0",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 13.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Discount",
-                style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "2.0",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 13.0,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Tax",
-                style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "3.0",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          Divider(
-            height: 40.0,
-            color: Color(0xFFD3D3D3),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                "Sub Total",
-                style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "38.0",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-
-          // ListTile(
-          //   leading: Text("Card Total",style: TextStyle(color: Colors.grey,fontSize: 16.0,fontWeight: FontWeight.bold),),
-          //   trailing: Text("33.0",style: TextStyle(color: Colors.black,fontSize: 16.0,fontWeight: FontWeight.bold),),
-          // ),
-          SizedBox(
-            height: 24.0,
-          ),
-          InkWell(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) => Login()));
-            },
-            child: Container(
-              height: 50.0,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              child: Center(
-                child: Text(
-                  "Procede to CheckOut",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }*/

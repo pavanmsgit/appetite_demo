@@ -17,8 +17,23 @@ Widget listOfCategories(BuildContext context) {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return CustomScrollView(
+            scrollDirection: Axis.horizontal,
             slivers: <Widget>[
-              SliverGrid(
+
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                    DocumentSnapshot data = snapshot.data.docs[index];
+                    return Padding(
+                      padding: EdgeInsets.only(left: 20,right: 10,top: 5,bottom: 5),
+                      child: foodCategories(context, data),
+                    );
+                  },
+                  childCount: snapshot.data.docs.length,
+
+                ),
+              ),
+              /*SliverGrid(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3, mainAxisExtent: 120),
                 delegate: SliverChildBuilderDelegate(
@@ -28,7 +43,7 @@ Widget listOfCategories(BuildContext context) {
                   },
                   childCount: snapshot.data.docs.length,
                 ),
-              ),
+              ),*/
             ],
           );
         }
@@ -50,10 +65,12 @@ Widget foodCategories(BuildContext context, data) {
   Size size = MediaQuery.of(context).size;
   String categoryName = categories.category_name;
   String categoryPhotoURL = categories.category_photo_url;
+
+
   return Column(
     children: [
       Padding(
-        padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+        padding: EdgeInsets.only(top: 5.0, bottom: 5.0,),
         child: Container(
           decoration: BoxDecoration(
             boxShadow: [

@@ -1,6 +1,7 @@
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 //  splash screen
 
@@ -28,10 +29,13 @@ class Splash extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 20),
           ),
           Center(
-              child: CircularProgressIndicator(
-                backgroundColor: primary,
-                valueColor: AlwaysStoppedAnimation<Color>(secondary),
-              ))
+            child: LoadingBouncingGrid.square(
+              size: 70.0,
+              //inverted: true,
+              backgroundColor: secondary,
+              duration: Duration(milliseconds: 1000),
+            ),
+          ),
         ],
       ),
     );

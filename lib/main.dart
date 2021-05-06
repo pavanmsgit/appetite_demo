@@ -1,10 +1,12 @@
 import 'package:appetite_demo/auth/googleSignIn.dart';
+import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/mainScreens/home.dart';
 import 'package:appetite_demo/mainScreens/login.dart';
 import 'package:appetite_demo/mainScreens/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +16,10 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.white,
+      ));
   runApp(Phoenix(
     child: MultiProvider(
       providers: [

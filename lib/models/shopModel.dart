@@ -16,6 +16,7 @@ class Shop {
   int shop_active_hours_open;
   int shop_active_hours_close;
   List<dynamic> shop_name_search;
+  String shop_seller_number;
 
   DocumentReference reference;
 
@@ -34,6 +35,7 @@ class Shop {
     this.shop_active_hours_open = map['shop_active_hours_open'];
     this.shop_active_hours_close = map['shop_active_hours_close'];
     this.shop_name_search = map['shop_name_search'];
+    this.shop_seller_number = map['shop_seller_number'];
   }
 
   Shop.fromSnapshot(DocumentSnapshot snapshot)
@@ -53,7 +55,8 @@ class Shop {
       this.shop_live,
       this.shop_active_hours_open,
       this.shop_active_hours_close,
-      this.shop_name_search});
+      this.shop_name_search,
+      this.shop_seller_number});
 }
 
 
@@ -282,6 +285,9 @@ class OrderItems{
       });
 
 }
+
+
+
 
 
 

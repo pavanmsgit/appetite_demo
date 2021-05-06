@@ -1,3 +1,4 @@
+import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/subPages/homePageComponents/shopListItemComponent.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -127,16 +128,7 @@ class _ListOfShopsState extends State<ListOfShops> {
                   ],
                 );
               }
-              return Container(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(secondary))
-                  ],
-                ),
-              );
+              return LoadingPage();
             }),
       ),
     );

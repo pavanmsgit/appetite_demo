@@ -1,7 +1,9 @@
 import 'package:appetite_demo/helpers/appBarDefault.dart';
+import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/subPages/homePageComponents/advestiseBanner.dart';
 import 'package:appetite_demo/subPages/homePageComponents/foodCategories.dart';
 import 'package:appetite_demo/subPages/homePageComponents/listOfShops.dart';
 import 'package:appetite_demo/subPages/homePageComponents/shopDetailsAndMenu.dart';
@@ -11,14 +13,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
   Stream _getStream() {
     var qs = FirebaseFirestore.instance
         .collection("shops")
@@ -34,81 +34,47 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-
     return SafeArea(
       child: Scaffold(
-
         body: StreamBuilder<QuerySnapshot>(
             stream: _getStream(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return CustomScrollView(
                   slivers: <Widget>[
-                   ///APP BAR
-                    SliverAppBar(
-                      floating: true,
-                      stretch: false,
-                      leading: Container(),
-                      flexibleSpace: Container(
-                        margin: EdgeInsets.only(bottom: 10),
-                        // It will cover 20% of our total height
-                        height: size.height * 0.6,
-                        child: Stack(
-                          children: <Widget>[
-                            Container(
-                              height: size.height * 0.11,
-                              decoration: BoxDecoration(
-                                color: tertiary,
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(40),
-                                  bottomRight: Radius.circular(40),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 50,
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 0),
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                //height: 90,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(70),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      offset: Offset(0, 10),
-                                      blurRadius: 40,
-                                      color: secondary.withOpacity(0.23),
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: Image.asset(
-                                    "assets/logo2.png",
-                                    width: 100,
-                                    height: 50,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                    ///APP BAR
+                    silverAppBarDefault(size),
+
+
+                    ///AD POSTERS
+                    SliverToBoxAdapter(
+                      child: StreamBuilder(
+                        stream: FirebaseFirestore.instance.collection("ad_posters").doc('hsAJdES8CAfNvqd3VdQD').snapshots(),
+                        builder: (context, snapshot){
+
+                          if (snapshot.hasData){var list = snapshot.data;
+                          return checkIPosterTypeAndReturnLayout(list["poster_list"] ,size);}
+                          else return LoadingPage();
+                        },
+                      )
+                    ),
+
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 25, top: 10, bottom: 10),
+                        child: Text(
+                          "Order food from your favorite cuisines !",
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w300),
                         ),
                       ),
-                      expandedHeight: 120,
-                      backgroundColor: Colors.transparent,
                     ),
 
                     ///FOOD CATEGORIES GRID VIEW
                     SliverToBoxAdapter(
                         child: Container(
                       width: size.width * 0.95,
-                      height: size.height / 3.5,
+                      height: size.height / 6,
                       child: listOfCategories(context),
                     )),
 
@@ -127,9 +93,9 @@ class _HomePageState extends State<HomePage> {
                     ///LIST OF SHOPS
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
-                            (BuildContext context, int index) {
+                        (BuildContext context, int index) {
                           DocumentSnapshot data = snapshot.data.docs[index];
-                          return shopListItem(context,data);
+                          return shopListItem(context, data);
                         },
                         childCount: snapshot.data.docs.length,
                       ),
@@ -141,21 +107,9 @@ class _HomePageState extends State<HomePage> {
                   ],
                 );
               }
-              return Container(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(secondary))
-                  ],
-                ),
-              );
+              return LoadingPage();
             }),
       ),
     );
   }
-
 }
-
-

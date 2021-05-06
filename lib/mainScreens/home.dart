@@ -1,9 +1,12 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:appetite_demo/auth/googleSignIn.dart';
 import 'package:appetite_demo/auth/userData.dart';
+import 'package:appetite_demo/helpers/appBarDefault.dart';
+import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/subPages/accountPage.dart';
 import 'package:appetite_demo/subPages/homePage.dart';
+import 'package:appetite_demo/subPages/mapsPage.dart';
 import 'package:appetite_demo/subPages/searchPage.dart';
 import 'package:appetite_demo/subPages/orderPage.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -21,7 +24,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   List<String> data;
   String uid, name, email, photoUrl;
-
 
   //INTIALIZE PAGE WITH USER DATA
   @override
@@ -42,7 +44,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
-
   //CHECKING USER DATA
   getUserData() async {
     data = await UserData().getUserData();
@@ -55,7 +56,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     email = data[2];
     photoUrl = data[3];
   }
-
 
   //ICON LIST FOR BOTTOM NAVIGATION BAR
   final iconList = <IconData>[
@@ -76,21 +76,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
+    Size size = MediaQuery.of(context).size;
+
     return Scaffold(
 
-      //ASSIGNS DIFFERENT COMPONENTS WHICH ARE MENTIONED IN THE LIST OF WIDGETS _pageOption.
+      ///ASSIGNS DIFFERENT COMPONENTS WHICH ARE MENTIONED IN THE LIST OF WIDGETS _pageOption.
       body: Container(child: _pageOption[_selectedPageIndex]),
-
 
       ///CART FAB BUTTON
       floatingActionButton: FloatingActionButton(
-
         backgroundColor: secondary,
         child: Icon(
           Icons.location_pin,
           color: tertiary,
         ),
         onPressed: () {
+          Navigator.of(context).push(changeScreenUp(MapsPage()));
           print('Floating Action Button Pressed');
         },
       ),
@@ -103,6 +104,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         icons: iconList,
         backgroundColor: tertiary,
         activeColor: secondary,
+        notchMargin: 15,
         inactiveColor: Colors.white,
         activeIndex: _selectedPageIndex,
         gapLocation: GapLocation.center,
@@ -110,12 +112,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         leftCornerRadius: 0,
         rightCornerRadius: 0,
         onTap: (index) => setState(
-          () => _selectPage(index),
+              () => _selectPage(index),
         ),
       ),
+
+      extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: false,
     );
   }
 }
-
-
-
