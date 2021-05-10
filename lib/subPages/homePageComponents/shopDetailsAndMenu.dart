@@ -21,6 +21,7 @@ class ShopDetailsAndMenu extends StatefulWidget {
 class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
     with SingleTickerProviderStateMixin {
   bool _onlyVeg = false;
+  bool _onlyNonVeg = false;
   bool _onlyDrinks = false;
   int orderQuantity = 0;
   ShopItems shopItems;
@@ -43,15 +44,14 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
 
   void menuInteractedCallback(ShopItems shopItems, int quantity) {
     OrderModel order;
-     orderList.removeWhere((element) => element.shopItems.item_id == shopItems.item_id);
+    orderList.removeWhere(
+        (element) => element.shopItems.item_id == shopItems.item_id);
     if (quantity != 0) {
       order = OrderModel(shopItems, quantity);
       orderList.add(order);
     }
     setupBottomCartBadgeData(orderList);
   }
-
-
 
   void setupBottomCartBadgeData(List<OrderModel> orderList) {
     if (orderList.isEmpty) {
@@ -65,7 +65,8 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
     double totalPrice = 0.0;
     orderList.forEach((order) {
       totalQty = totalQty + order.quantity;
-      totalPrice = totalPrice + order.quantity * order.shopItems.item_price;
+      totalPrice =
+          totalPrice + order.quantity * int.parse(order.shopItems.item_price);
     });
 
     setState(() {
@@ -83,6 +84,15 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
           .collection("shops")
           .doc(widget.data.id)
           .collection('shop_items')
+          .where('item_type', isEqualTo: 0)
+          .snapshots();
+      print('${qs.single}');
+      return qs;
+    } else if (_onlyNonVeg == true) {
+      var qs = FirebaseFirestore.instance
+          .collection("shops")
+          .doc(widget.data.id)
+          .collection('shop_items')
           .where('item_type', isEqualTo: 1)
           .snapshots();
       print('${qs.single}');
@@ -92,7 +102,7 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
           .collection("shops")
           .doc(widget.data.id)
           .collection('shop_items')
-          .where('item_type', isEqualTo: 3)
+          .where('item_type', isEqualTo: 2)
           .snapshots();
       print('${qs.single}');
       return qs;
@@ -129,8 +139,17 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
                     SliverAppBar(
                       floating: true,
                       stretch: false,
-                      //leading: Container(),
-                      // Display a placeholder widget to visualize the shrinking size.
+                      leading: Container(
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
                       flexibleSpace: Container(
                         margin: EdgeInsets.only(bottom: 10),
                         // It will cover 20% of our total height
@@ -280,7 +299,24 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: 40, top: 10),
+                          padding: EdgeInsets.only(right: 10, top: 10),
+                          child: ChoiceChip(
+                            selectedColor: Colors.red,
+                            labelStyle: TextStyle(
+                                color: _onlyNonVeg == true
+                                    ? Colors.white
+                                    : tertiary),
+                            label: Text("Non-Veg"),
+                            selected: _onlyNonVeg,
+                            onSelected: (bool selected) {
+                              setState(() {
+                                _onlyNonVeg = !_onlyNonVeg;
+                              });
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 30, top: 10),
                           child: ChoiceChip(
                             selectedColor: tertiary,
                             labelStyle: TextStyle(
@@ -334,8 +370,14 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
             itemCount: _totalQty,
             itemTotalPrice: _totalPrice,
             shouldShowPrice: true,
-            onPress: () async{
-              changeScreen(context, CartPage(orderList: orderList,size: size,finalPrice: _totalPrice,shop: shop,totalItems: _totalQty,));
+            onPress: () async {
+              Navigator.of(context).push(changeScreenSide(CartPage(
+                orderList: orderList,
+                size: size,
+                finalPrice: _totalPrice,
+                shop: shop,
+                totalItems: _totalQty,
+              )));
             },
           ),
         ),
@@ -343,45 +385,45 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
     );
   }
 
+  checkVegOrNonVeg(type) {
+    if (type == 0) {
+      return Container(
+        child: Icon(
+          Icons.recommend,
+          color: Colors.green,
+          size: 20,
+        ),
+      );
+    } else if (type == 1) {
+      return Container(
+        child: Icon(
+          Icons.recommend,
+          color: Colors.red,
+          size: 20,
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
   Widget itemList(BuildContext context, data) {
     final item = ShopItems.fromSnapshot(data);
     Size size = MediaQuery.of(context).size;
-
-    checkVegOrNonVeg(type) {
-      if (type == 1) {
-        return Container(
-          child: Icon(
-            Icons.recommend,
-            color: Colors.green,
-            size: 20,
-          ),
-        );
-      } else if (type == 2) {
-        return Container(
-          child: Icon(
-            Icons.recommend,
-            color: Colors.red,
-            size: 20,
-          ),
-        );
-      } else {
-        return Container();
-      }
-    }
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
       child: ListTile(
         leading: Container(
           height: 100,
-          width: 100,
+          width: 80,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Image.network(
               item.item_photo,
-              width: size.width * 0.95,
+              width: size.width * 0.65,
               height: 100,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
             ),
           ),
         ),
@@ -423,7 +465,6 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
                 child: checkVegOrNonVeg(item.item_type)),
           ],
         ),
-
         trailing: AddButton(
             quantity: orderQuantity,
             onInteractedCallback: (quantity) {
@@ -436,38 +477,6 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*Column(
                         children: <Widget>[

@@ -1,8 +1,10 @@
+import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/models/shopModel.dart';
 import 'package:appetite_demo/subPages/homePageComponents/listOfShops.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 Stream _getStream() {
@@ -30,7 +32,6 @@ Widget listOfCategories(BuildContext context) {
                     );
                   },
                   childCount: snapshot.data.docs.length,
-
                 ),
               ),
               /*SliverGrid(
@@ -47,16 +48,7 @@ Widget listOfCategories(BuildContext context) {
             ],
           );
         }
-        return Container(
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(secondary))
-            ],
-          ),
-        );
+        return LoadingPage();
       });
 }
 
@@ -67,82 +59,77 @@ Widget foodCategories(BuildContext context, data) {
   String categoryPhotoURL = categories.category_photo_url;
 
 
-  return Column(
-    children: [
-      Padding(
-        padding: EdgeInsets.only(top: 5.0, bottom: 5.0,),
-        child: Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                offset: Offset(0, 0),
-                blurRadius: 10,
-                color: Colors.black.withOpacity(0.10),
+  return GestureDetector(
+      onTap: (){
+         Navigator.of(context).push(changeScreenFadeTransition(ListOfShops(cuisine: categories.category_name,size: size,)));
+      },
+      child: Card(color: Colors.transparent,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0)),
+        elevation: 0.0,
+        child: Stack(
+          children: <Widget>[
+            Container(
+              width: size.width / 4.5,
+              height: size.height / 8,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(0, 0),
+                    blurRadius: 10,
+                    color: Colors.black.withOpacity(0.10),
+                  ),
+                ],
               ),
-            ],
-          ),
-          // height:size.height /5,
-          width: size.width * 0.25,
-          child: Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
-            elevation: 3.0,
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 0.0),
-                GestureDetector(
-                  onTap: () async {
-                     Navigator.of(context)
-                            .push(changeScreenFadeTransition(
-                            ListOfShops(cuisine: categories.category_name,size: size,)));
-                  },
-                  child: Stack(
-                    children: <Widget>[
-                      Container(
-                        height: size.height / 12,
-                        //width: size.width / 2,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                          ),
-                          child: Image.network(
-                            categoryPhotoURL,
-                            width: size.width * 0.25,
-                            height: 100,
-                            fit: BoxFit.fill,
-                          ),
-                        ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                child: Image.network(
+                  categoryPhotoURL,
+                  width: size.width * 0.25,
+                  height: 100,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 60,
+              bottom: 7,
+              left: 0,
+              child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 0,vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(0),bottomLeft: Radius.circular(10),bottomRight:Radius.circular(10) ),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0, 0),
+                        blurRadius: 10,
+                        color: Colors.black.withOpacity(0.10),
                       ),
                     ],
                   ),
-                ),
-                SizedBox(height: 5.0),
-                GestureDetector(
-                  onTap: () async {},
-                  child: Padding(
-                      padding: EdgeInsets.all(5.0),
-                      child: Column(
-                        children: [
-                          Center(
-                            child: Text(
-                              categoryName,
-                              style: TextStyle(
-                                fontSize: 10.0,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              textAlign: TextAlign.start,
-                            ),
-                          )
-                        ],
-                      )),
-                ),
-                SizedBox(height: 2.0),
-              ],
-            ),
-          ),
+
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 0,horizontal: 10),
+                        child: Text(
+                          categoryName,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                    ],
+                  )
+              ),)
+          ],
         ),
       ),
-    ],
-  );
+    );
 }

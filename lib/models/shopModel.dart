@@ -8,13 +8,13 @@ class Shop {
   GeoPoint shop_location;
   double shop_overall_rating;
   List<dynamic> shop_cuisine;
-  int shop_average_price;
+  String shop_average_price;
   bool offer_exist;
   int offer_percentage;
   int shop_priority;
   Timestamp shop_live;
-  int shop_active_hours_open;
-  int shop_active_hours_close;
+  String shop_active_hours_open;
+  String shop_active_hours_close;
   List<dynamic> shop_name_search;
   String shop_seller_number;
 
@@ -65,7 +65,7 @@ class ShopItems {
   String item_id;
   String item_name;
   String item_photo;
-  int item_price;
+  String item_price;
   int item_type;
   List<dynamic> item_name_search;
   int quantity;
@@ -193,7 +193,7 @@ class Orders{
   String order_by_name;
   String order_by_phone;
   String order_by_uid;
-  int order_total_price;
+  String order_total_price;
   int order_total_quantity;
   int order_payment_mode;
   int order_pickup_mode;
@@ -258,7 +258,7 @@ class OrderItems{
   String item_photo;
   int item_quantity;
   int item_type;
-  int item_price;
+  String item_price;
 
 
   DocumentReference reference;

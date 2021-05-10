@@ -55,7 +55,7 @@ Widget shopListItem(BuildContext context, data) {
                         shop.shop_logo,
                         width: size.width * 0.95,
                         height: 200,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.cover,
                         //cancelToken: cancellationToken,
                       ),
                     ),

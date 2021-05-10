@@ -303,7 +303,9 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     Size size = MediaQuery.of(context).size;
     final order = Orders.fromSnapshot(widget.dataOrder);
 
-    double gst = order.order_total_price*0.18;
+    var totalPrice = double.parse(order.order_total_price);
+
+    double gst = totalPrice * 0.18;
 
     int orderDate = order.order_timestamp.millisecondsSinceEpoch;
     final orderDateFormat = DateFormat('dd-MM-yyyy hh:mm a');
@@ -681,7 +683,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                 padding: EdgeInsets.only(
                                     left: 0.0, right: 40.0, top: 5),
                                 child: Text(
-                                  'Rs. ${order.order_total_price+gst.truncate()}',
+                                  'Rs. ${totalPrice +gst.truncate()}',
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400),

@@ -32,6 +32,8 @@ dependencies:
   animated_bottom_navigation_bar: ^0.3.2
   auto_size_text: ^2.1.0
 
+  loading_overlay: ^0.2.1
+
 
 
 
@@ -63,7 +65,9 @@ dependencies:
   progress_dialog: ^1.2.4
   loading_animations: ^2.1.0
 
-  google_maps_flutter: ^2.0.3
+  #google_maps_flutter: ^2.0.3
+  map: ^0.3.0
+  latlng: ^0.1.0
 
 
   #STORAGE AND SHARED PREFERENCES

@@ -1,3 +1,4 @@
+
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:flutter/material.dart';
 
@@ -19,16 +20,84 @@ AppBar appBarDefault = AppBar(
 
 
 
-silverAppBarDefault(size){
-  return SliverAppBar(
+sliverAppBarDefault(size){
+  return  SliverAppBar(
     floating: true,
     stretch: false,
     leading: Container(),
     flexibleSpace: Container(
       margin: EdgeInsets.only(bottom: 10),
       // It will cover 20% of our total height
+      height: size.height * 0.6,
+      child: Stack(
+        children: <Widget>[
+          Container(
+            height: size.height * 0.11,
+            decoration: BoxDecoration(
+              color: tertiary,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(40),
+                bottomRight: Radius.circular(40),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 50,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+                alignment: Alignment.center,
+                margin: EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 0),
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                //height: 90,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(70),
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(0, 10),
+                      blurRadius: 40,
+                      color: secondary.withOpacity(0.23),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 0),
+                  child: Center(
+                    child: Image.asset(
+                      "assets/logo2.png",
+                      width: 100,
+                      height: 50,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),),
+          ),
+        ],
+      ),
+    ),
+    expandedHeight: 120,
+    backgroundColor: Colors.transparent,
+  );
+}
 
 
+
+
+sliverAppBarDefaultWithBackButton(size, context){
+  return SliverAppBar(
+    floating: true,
+    stretch: false,
+    leading: Container(
+      child: IconButton(icon: Icon(Icons.arrow_back_ios,color: Colors.white,),onPressed: () {
+        Navigator.pop(context);
+      },),
+    ),
+    flexibleSpace: Container(
+      margin: EdgeInsets.only(bottom: 10),
+      // It will cover 20% of our total height
       height: size.height * 0.6,
       child: Stack(
         children: <Widget>[
@@ -51,7 +120,7 @@ silverAppBarDefault(size){
               alignment: Alignment.center,
               margin: EdgeInsets.symmetric(
                   horizontal: 20, vertical: 0),
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 10),
               //height: 90,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -64,15 +133,88 @@ silverAppBarDefault(size){
                   ),
                 ],
               ),
-              child: Center(
-                child: Image.asset(
-                  "assets/logo2.png",
-                  width: 100,
-                  height: 50,
-                  fit: BoxFit.fill,
+              child: Padding(
+                padding: EdgeInsets.only(left: 0),
+                child: Center(
+                  child: Image.asset(
+                    "assets/logo2.png",
+                    width: 100,
+                    height: 50,
+                    fit: BoxFit.fill,
+                  ),
                 ),
+              ),),
+          ),
+        ],
+      ),
+    ),
+    expandedHeight: 120,
+    backgroundColor: Colors.transparent,
+  );
+
+
+}
+
+
+
+sliverAppBarDefaultWithBackButtonDown(size, context){
+  return SliverAppBar(
+    floating: true,
+    stretch: false,
+    leading: Container(
+      child: IconButton(icon: Icon(Icons.keyboard_arrow_down_outlined,color: Colors.white,size: 30,),onPressed: () {
+        Navigator.pop(context);
+      },),
+    ),
+    flexibleSpace: Container(
+      margin: EdgeInsets.only(bottom: 10),
+      // It will cover 20% of our total height
+      height: size.height * 0.6,
+      child: Stack(
+        children: <Widget>[
+          Container(
+            height: size.height * 0.11,
+            decoration: BoxDecoration(
+              color: tertiary,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(40),
+                bottomRight: Radius.circular(40),
               ),
             ),
+          ),
+          Positioned(
+            top: 50,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              alignment: Alignment.center,
+              margin: EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 0),
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              //height: 90,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(70),
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(0, 10),
+                    blurRadius: 40,
+                    color: secondary.withOpacity(0.23),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: EdgeInsets.only(left: 0),
+                child: Center(
+                  child: Image.asset(
+                    "assets/logo2.png",
+                    width: 100,
+                    height: 50,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),),
           ),
         ],
       ),

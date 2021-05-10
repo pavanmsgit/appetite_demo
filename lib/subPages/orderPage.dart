@@ -43,6 +43,7 @@ class _OrderPageState extends State<OrderPage> {
     var qs = FirebaseFirestore.instance
         .collection("orders")
         .where('order_by_uid', isEqualTo: uid)
+        .orderBy('order_timestamp')
         .snapshots();
     print('${qs.single}');
     return qs;
@@ -56,20 +57,62 @@ class _OrderPageState extends State<OrderPage> {
           Padding(
             padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
             child: Text(
-              'PENDING ',
+              'PENDING',
               style: TextStyle(fontSize: 12),
             ),
           ),
           Padding(
               padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
               child: Icon(
-                Icons.pending,
+                Icons.new_releases_rounded,
                 size: 20,
                 color: secondary,
               )),
         ],
       );
-    } else if (status == 1) {
+    }
+    else if (status == 1) {
+      return Row(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+            child: Text(
+              'PROCESSING',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
+          Padding(
+              padding:
+              EdgeInsets.only(left: 5.0, right: 0.0, top: 0, bottom: 3),
+              child: Icon(
+                Icons.thumb_up_alt_rounded,
+                size: 20,
+                color: Colors.amber,
+              )),
+        ],
+      );
+    } else if (status == 2) {
+      return Row(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+            child: Text(
+              'COMPLETED ',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
+          Padding(
+              padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+              child: Icon(
+                Icons.check_circle,
+                size: 20,
+                color: Colors.green,
+              )),
+        ],
+      );
+    }else if (status == 4) {
       return Row(
         //mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -83,29 +126,9 @@ class _OrderPageState extends State<OrderPage> {
           Padding(
               padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
               child: Icon(
-                Icons.pin_drop,
+                Icons.location_on_rounded,
                 size: 20,
-                color: tertiary,
-              )),
-        ],
-      );
-    } else if (status == 2) {
-      return Row(
-        //mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
-            child: Text(
-              'DELIVERED ',
-              style: TextStyle(fontSize: 12),
-            ),
-          ),
-          Padding(
-              padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
-              child: Icon(
-                Icons.check_circle,
-                size: 20,
-                color: Colors.green,
+                color: secondary,
               )),
         ],
       );
@@ -113,15 +136,22 @@ class _OrderPageState extends State<OrderPage> {
       return Row(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 20.0, right: 0.0, top: 10),
+            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
             child: Text(
-              'STATUS UNKNOWN',
+              'STATUS UNKNOWN ',
               style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                   color: Colors.grey),
             ),
           ),
+          Padding(
+              padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+              child: Icon(
+                Icons.error,
+                size: 20,
+                color: Colors.red,
+              )),
         ],
       );
     }
@@ -140,7 +170,7 @@ class _OrderPageState extends State<OrderPage> {
               if (snapshot.hasData) {
                 return CustomScrollView(
                   slivers: <Widget>[
-                    silverAppBarDefault(size),
+                    sliverAppBarDefault(size),
 
                     SliverToBoxAdapter(
                       child: Padding(
@@ -165,7 +195,20 @@ class _OrderPageState extends State<OrderPage> {
                     ),
 
                     SliverPadding(
-                      padding: EdgeInsets.all(35.0),
+                      padding: EdgeInsets.only(top: 30),
+                    ),
+
+                    SliverToBoxAdapter(
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          child: Image.asset(
+                            'assets/logo2.png',
+                          ),
+                        )),
+
+                    SliverPadding(
+                      padding: EdgeInsets.only(bottom: 60),
                     ),
                   ],
                 );
@@ -213,7 +256,7 @@ class _OrderPageState extends State<OrderPage> {
                         order.order_shop_logo,
                         width: size.width * 0.95,
                         height: 100,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.cover,
                         //cancelToken: cancellationToken,
                       ),
                     ),
@@ -349,7 +392,7 @@ class _OrderPageState extends State<OrderPage> {
                           padding:
                               EdgeInsets.only(left: 20.0, right: 0.0, top: 5),
                           child: Text(
-                            '${order.order_total_price}',
+                            order.order_total_price,
                             style: TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.w400),
                           ),

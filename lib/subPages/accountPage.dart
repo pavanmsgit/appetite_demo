@@ -1,12 +1,16 @@
+@override
 import 'package:appetite_demo/auth/googleSignIn.dart';
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/appBarDefault.dart';
+import 'package:appetite_demo/helpers/displaySize.dart';
 import 'package:appetite_demo/helpers/style.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class AccountPage extends StatefulWidget {
-  @override
   _AccountPageState createState() => _AccountPageState();
 }
 
@@ -73,7 +77,7 @@ class _AccountPageState extends State<AccountPage> {
         // appBar: appBarDefault,
         body: CustomScrollView(
           slivers: <Widget>[
-            silverAppBarDefault(size),
+            sliverAppBarDefault(size),
             SliverToBoxAdapter(
               child: Container(
                 color: Colors.white,
@@ -94,109 +98,195 @@ class _AccountPageState extends State<AccountPage> {
   Widget card(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
     return Column(
+      //mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          alignment: Alignment.center,
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 10.0,horizontal: 0),
+        ),
+
+        ///NAME AND EMAIL
+        Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                    ),
-                    Center(
-                      child: RichText(
-                          text: TextSpan(
-                        children: [
-                          TextSpan(
-                              text: "Welcome",
-                              style: TextStyle(
-                                  color: Colors.grey[900], fontSize: 20)),
-                          TextSpan(text: " $name"),
-                        ],
-                        style: TextStyle(color: Colors.black, fontSize: 25),
-                      )),
-                    ),
-                    SizedBox(height: 10),
-                    Divider(
-                      thickness: 2.0,
-                      color: Colors.grey[900],
-                    ),
-                    SizedBox(height: 10),
-                    /////////////////////////////////
-                    checkProfilePhotoUrl(photoUrl),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 20),
-                        ),
-                        Text('Email :',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[900],
-                            )),
-                        Padding(
-                          padding: EdgeInsets.only(left: 10),
-                        ),
-                        Text('$email',
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w700)),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            auth.logout(context);
-                          },
-                          child: Container(
-                            width: 150,
-                            height: 50,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [tertiary, tertiary]),
-                                borderRadius: BorderRadius.circular(40.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: tertiary.withOpacity(.3),
-                                      offset: Offset(0.4, 0.4),
-                                      blurRadius: 8.0)
-                                ]),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                child: Center(
-                                  child: Text('LOGOUT',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w700)),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              checkProfilePhotoUrl(photoUrl),
+
+              ListTile(
+                title: Center(child: Padding(padding: EdgeInsets.only(left: 60),child: Text('$name',style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w400),),)),
+                trailing: IconButton(icon: Icon(Icons.edit),),
               ),
-              SizedBox(height: 20),
-              Divider(
-                thickness: 2.0,
-                color: Colors.grey[900],
+
+              ListTile(
+                title: Center(child: Padding(padding: EdgeInsets.only(left: 60),child: Text('$email',style: TextStyle(color: Colors.black,fontSize: 15,fontWeight: FontWeight.w400),),)),
+                trailing: IconButton(icon: Icon(Icons.edit),),
+              ),
+
+              ListTile(
+                title: Center(child: Padding(padding: EdgeInsets.only(left: 60),child: Text('8296731873',style: TextStyle(color: Colors.black,fontSize: 15,fontWeight: FontWeight.w400),),)),
+                trailing: IconButton(icon: Icon(Icons.edit),),
               ),
             ],
           ),
         ),
+        Divider(
+          height: 20.0,
+          color: Colors.black,
+        ),
+
+        ///ROW OF ICONS FOR NOTIFICATIONS , PAYMENTS AND ORDERS
+        Container(
+          height: 40.0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+
+              Container(
+                padding: EdgeInsets.only(right: 0),
+                height: 100,
+                width: 100,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: IconButton(icon: Icon(
+                    Icons.notifications_none_rounded,
+                    color: tertiary,
+                  ),tooltip: 'NOTIFICATIONS',)
+                ),
+              ),
+
+              VerticalDivider(
+                width: 1.0,
+                color: Colors.black,
+              ),
+
+              Container(
+                padding: EdgeInsets.only(right: 0),
+                height: 100,
+                width: 100,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.payment,
+                      color: tertiary,
+                    ),
+                    tooltip: 'PAYMENT',
+                  ),
+                ),
+              ),
+
+              VerticalDivider(
+                width: 1.0,
+                color: Colors.black,
+              ),
+
+              Container(
+                padding: EdgeInsets.only(right: 0),
+                height: 100,
+                width: 100,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.shopping_bag_outlined,
+                      color: tertiary,
+                    ),
+                    tooltip: 'ORDERS HISTORY',
+
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+
+        Divider(
+          height: 20.0,
+          color: Colors.black,
+        ),
+        SizedBox(height: 2),
+
+
+
+
+        ListTile(
+          title: Padding(padding: EdgeInsets.only(left: 20),child: Text('About',style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w400),),),
+          trailing: IconButton(icon: Icon(Icons.arrow_forward_ios_rounded),),
+        ),
+
+
+        Divider(
+          thickness: 0.8,
+          height: 2.0,
+          color: Colors.black,
+        ),
+
+        ListTile(
+          title: Padding(padding: EdgeInsets.only(left: 20),child: Text('Contact us',style: TextStyle(color: Colors.grey,fontSize: 15,fontWeight: FontWeight.w400),),),
+          trailing: IconButton(icon: Icon(Icons.arrow_forward_ios_rounded),),
+        ),
+
+        ListTile(
+          title: Padding(padding: EdgeInsets.only(left: 20),child: Text('Send Feedback',style: TextStyle(color: Colors.grey,fontSize: 15,fontWeight: FontWeight.w400),),),
+          trailing: IconButton(icon: Icon(Icons.arrow_forward_ios_rounded),),
+        ),
+
+
+        ListTile(
+          onTap: () {
+            auth.logout(context);
+          },
+          title: Padding(padding: EdgeInsets.only(left: 20),child: Text('Logout',style: TextStyle(color: tertiary,fontSize: 15,fontWeight: FontWeight.w400),),),
+          trailing: IconButton(icon: Icon(Icons.logout,color: tertiary,),onPressed: ()
+          {
+            auth.logout(context);
+          },),
+        ),
+
+
+
+
+
+
+
+       /* ///LOGOUT BUTTON
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () async {
+                auth.logout(context);
+              },
+              child: Container(
+                width: 120,
+                height: 40,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [tertiary, tertiary]),
+                    borderRadius: BorderRadius.circular(40.0),
+                    boxShadow: [
+                      BoxShadow(
+                          color: tertiary.withOpacity(.3),
+                          offset: Offset(0.4, 0.4),
+                          blurRadius: 6.0)
+                    ]),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    child: Center(
+                      child: Text('LOGOUT',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),*/
       ],
     );
   }

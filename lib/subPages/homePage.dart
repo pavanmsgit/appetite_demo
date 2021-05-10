@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
                 return CustomScrollView(
                   slivers: <Widget>[
                     ///APP BAR
-                    silverAppBarDefault(size),
+                    sliverAppBarDefault(size),
 
 
                     ///AD POSTERS
@@ -51,17 +51,17 @@ class _HomePageState extends State<HomePage> {
                       child: StreamBuilder(
                         stream: FirebaseFirestore.instance.collection("ad_posters").doc('hsAJdES8CAfNvqd3VdQD').snapshots(),
                         builder: (context, snapshot){
-
-                          if (snapshot.hasData){var list = snapshot.data;
+                          if (snapshot.hasData){
+                            var list = snapshot.data;
                           return checkIPosterTypeAndReturnLayout(list["poster_list"] ,size);}
-                          else return LoadingPage();
+                          else return Container();
                         },
                       )
                     ),
 
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.only(left: 25, top: 10, bottom: 10),
+                        padding: EdgeInsets.only(left: 25, top: 20, bottom: 10),
                         child: Text(
                           "Order food from your favorite cuisines !",
                           style: TextStyle(
@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                         child: Text(
                           "What's cooking in the kitchen today?",
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w300),
+                              fontSize: 15, fontWeight: FontWeight.w300),
                         ),
                       ),
                     ),
@@ -102,11 +102,26 @@ class _HomePageState extends State<HomePage> {
                     ),
 
                     SliverPadding(
-                      padding: EdgeInsets.all(35.0),
+                      padding: EdgeInsets.only(top: 30),
+                    ),
+
+                    SliverToBoxAdapter(
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          child: Image.asset(
+                            'assets/logo2.png',
+                          ),
+                        )),
+
+                    SliverPadding(
+                      padding: EdgeInsets.only(bottom: 60),
                     ),
                   ],
                 );
               }
+
+
               return LoadingPage();
             }),
       ),

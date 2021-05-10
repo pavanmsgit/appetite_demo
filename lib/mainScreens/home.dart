@@ -32,7 +32,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     super.initState();
   }
 
-  final autoSizeGroup = AutoSizeGroup();
+
   CurvedAnimation curve;
 
   //SWITCHING PAGES FOR MAIN SCREEN
@@ -61,8 +61,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   final iconList = <IconData>[
     Icons.home,
     Icons.search_rounded,
-    Icons.history,
-    Icons.person,
+    Icons.receipt_long_rounded,
+    Icons.account_circle_rounded,
   ];
 
   //LIST OF PAGES WHICH WILL BE SWITCHED WITH THE HELP OF BOTTOM NAVIGATION BAR
