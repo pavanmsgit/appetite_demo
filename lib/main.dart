@@ -1,8 +1,9 @@
 import 'package:appetite_demo/auth/googleSignIn.dart';
 import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/mainScreens/home.dart';
+import 'package:appetite_demo/mainScreens/homeMain.dart';
 import 'package:appetite_demo/mainScreens/login.dart';
+import 'package:appetite_demo/mainScreens/preHome.dart';
 import 'package:appetite_demo/mainScreens/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,28 @@ void main() async {
       child: MyApp(),
     ),
   ));
+
+  configLoading();
 }
+
+
+configLoading() {
+  EasyLoading.instance
+    ..displayDuration =  Duration(milliseconds: 1000)
+    ..indicatorType = EasyLoadingIndicatorType.wave
+    ..loadingStyle = EasyLoadingStyle.dark
+    ..indicatorSize = 45.0
+    ..radius = 10.0
+    ..progressColor = secondary
+    ..backgroundColor = secondary
+    ..indicatorColor = secondary
+    ..textColor = secondary
+    ..maskColor = secondary.withOpacity(0.5)
+    ..userInteractions = false
+    ..dismissOnTap = true;
+}
+
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -43,6 +65,10 @@ class MyApp extends StatelessWidget {
         home: Phoenix(child: ScreensController()));
   }
 }
+
+
+
+
 
 class ScreensController extends StatefulWidget {
   @override
@@ -65,7 +91,7 @@ class _ScreensControllerState extends State<ScreensController> {
       return Splash();
     } else {
       if (auth.status == Status.Authenticated) {
-        return Home();
+        return PreHome();
       } else {
         return Login();
       }

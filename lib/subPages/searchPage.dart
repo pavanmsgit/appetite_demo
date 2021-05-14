@@ -59,8 +59,7 @@ class _SearchPageState extends State<SearchPage> {
                     .snapshots()
                 : FirebaseFirestore.instance
                     .collection("shops")
-                    .where('shop_name_search',
-                        arrayContains: searchController.text)
+                   // .where('shop_name_search', arrayContains: searchController.text)
                     .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {

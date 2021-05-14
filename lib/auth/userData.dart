@@ -22,6 +22,7 @@ class UserData {
       prefs.getString('name'),
       prefs.getString('email'),
       prefs.getString('photoUrl'),
+      prefs.getString('phone')
     ];
   }
 

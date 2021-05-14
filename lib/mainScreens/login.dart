@@ -1,9 +1,10 @@
 import 'package:appetite_demo/helpers/style.dart';
+import 'package:appetite_demo/mainScreens/preHome.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:appetite_demo/auth/googleSignIn.dart';
 import 'package:appetite_demo/auth/userData.dart';
-import 'package:appetite_demo/mainScreens/home.dart';
+import 'package:appetite_demo/mainScreens/homeMain.dart';
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
@@ -46,7 +47,7 @@ class _LoginState extends State<Login> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Home(),
+                          builder: (context) => PreHome(),
                         ),
                       );
                     }

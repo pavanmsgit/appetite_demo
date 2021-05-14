@@ -17,7 +17,7 @@ class OrderPage extends StatefulWidget {
 
 class _OrderPageState extends State<OrderPage> {
   List<String> data;
-  String uid, name, email, photoUrl;
+  String uid, name, email, photoUrl, phone;
 
   //INTIALIZE PAGE WITH USER DATA
   @override
@@ -37,7 +37,10 @@ class _OrderPageState extends State<OrderPage> {
     name = data[1];
     email = data[2];
     photoUrl = data[3];
+    phone = data[4];
   }
+
+
 
   Stream _getStream() {
     var qs = FirebaseFirestore.instance

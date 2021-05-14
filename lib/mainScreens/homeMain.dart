@@ -14,34 +14,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Home extends StatefulWidget {
+class HomeMain extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _HomeMainState createState() => _HomeMainState();
 }
 
-class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+class _HomeMainState extends State<HomeMain> with SingleTickerProviderStateMixin {
   int _selectedPageIndex = 0;
 
   List<String> data;
-  String uid, name, email, photoUrl;
+  String uid, name, email, photoUrl, phone;
 
   //INTIALIZE PAGE WITH USER DATA
   @override
   void initState() {
     getUserData();
     super.initState();
-  }
-
-
-  CurvedAnimation curve;
-
-  //SWITCHING PAGES FOR MAIN SCREEN
-  void _selectPage(int index) {
-    setState(() {
-      _selectedPageIndex = index;
-      print(_selectedPageIndex);
-      print('hello');
-    });
   }
 
   //CHECKING USER DATA
@@ -55,7 +43,23 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     name = data[1];
     email = data[2];
     photoUrl = data[3];
+    phone = data[4];
   }
+
+
+
+  CurvedAnimation curve;
+
+  //SWITCHING PAGES FOR MAIN SCREEN
+  void _selectPage(int index) {
+    setState(() {
+      _selectedPageIndex = index;
+      print(_selectedPageIndex);
+      print('hello');
+    });
+  }
+
+
 
   //ICON LIST FOR BOTTOM NAVIGATION BAR
   final iconList = <IconData>[

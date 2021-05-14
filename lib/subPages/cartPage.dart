@@ -1,19 +1,22 @@
 import 'dart:math';
-
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/appBarDefault.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/main.dart';
-import 'package:appetite_demo/mainScreens/home.dart';
+import 'package:appetite_demo/mainScreens/homeMain.dart';
 import 'package:appetite_demo/models/shopModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contact_picker/contact_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+//import 'package:fluttercontactpicker/fluttercontactpicker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:toggle_switch/toggle_switch.dart';
 
@@ -41,15 +44,20 @@ class _CartPageState extends State<CartPage> {
   TextEditingController controllerNumber = TextEditingController();
   TextEditingController controllerUserNumber = TextEditingController();
 
-  List<String> data;
-  String uid, name, email, photoUrl;
+
+  final ContactPicker _contactPicker = new ContactPicker();
+  //Contact _contact;
+
   int a;
   double totalPrice;
   bool isLoading = false;
 
 
 
-  //INITIALIZE PAGE WITH USER DATA
+  List<String> data;
+  String uid, name, email, photoUrl, phone;
+
+  //INTIALIZE PAGE WITH USER DATA
   @override
   void initState() {
     getUserData();
@@ -62,12 +70,15 @@ class _CartPageState extends State<CartPage> {
     UserData().getUserData().then((result) {
       setState(() => data = result);
     });
-    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
+    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]} ${data[1]} ${data[2]} ${data[3]} ${data[4]}');
     uid = data[0];
     name = data[1];
     email = data[2];
     photoUrl = data[3];
+    phone = data[4];
   }
+
+
 
   checkVegOrNonVeg(type) {
     if (type == 1) {
@@ -96,31 +107,85 @@ class _CartPageState extends State<CartPage> {
       return Column(
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 50),
-            child: TextField(
-              controller: controllerUserNumber,
-              keyboardType: TextInputType.number,
-              cursorColor: Colors.black,
-              autofocus: false,
-              minLines: 1,
-              maxLines: 1,
-              maxLength: 10,
-              decoration: InputDecoration(
-                hintMaxLines: 4,
-                hintText: "ENTER YOUR NUMBER : 98XXX XXXXX",
-                hintStyle: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w100,
-                    color: Colors.grey),
-              ),
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 0,top: 10),
+                      child: Text(
+                        'PHONE : ',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    )),
+                Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 0,top: 10),
+                      child: Text(
+                        '$phone',
+                        style: TextStyle(
+                            color: Colors.black45,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    )),
+              ],
             ),
           ),
+          
+          Padding(padding: EdgeInsets.only(),child:  Center(
+              child: Padding(
+                padding: EdgeInsets.only(left: 0),
+                child: Text(
+                  'TO CHANGE PHONE NUMBER. PLEASE GO TO ACCOUNT SETTINGS.',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w400),
+                ),
+              )),)
         ],
       );
     } else {
       return Column(
         children: [
-          Padding(
+
+          ElevatedButton(
+            onPressed: () async {
+
+            if (await FlutterContacts.requestPermission()) {
+
+              var contact = await _contactPicker.selectContact();
+              setState(() {
+               // _contact = contact;
+              });
+
+
+              print(contact.fullName);
+
+              /*List<Contact> contacts = await FlutterContacts.getContacts();
+
+              // Get all contacts (fully fetched)
+              contacts = await FlutterContacts.getContacts(
+                  withProperties: true, withPhoto: true);
+
+              print(contacts);*/
+
+             /* final PhoneContact contact = await FlutterContactPicker.pickPhoneContact();
+              print(contact);*/
+
+            }
+
+
+          },
+          child: Text('PICK CONTACTS'),
+          ),
+
+          /*Padding(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
             child: TextField(
               controller: controllerName,
@@ -155,7 +220,7 @@ class _CartPageState extends State<CartPage> {
                     color: Colors.grey),
               ),
             ),
-          ),
+          ),*/
         ],
       );
     }
@@ -437,7 +502,7 @@ class _CartPageState extends State<CartPage> {
                           'item_type' : orderItems.shopItems.item_type,
                         });}
                         EasyLoading.showSuccess('Order Placed !');
-                        changeScreenReplacement(context, Home());
+                        changeScreenReplacement(context, HomeMain());
                       }
 
                     }else if(pickUpMode==1){
@@ -478,7 +543,7 @@ class _CartPageState extends State<CartPage> {
                           'item_type' : orderItems.shopItems.item_type,
                         });}
                         EasyLoading.showSuccess('Order Placed !');
-                        changeScreenReplacement(context, Home());                  }
+                        changeScreenReplacement(context, HomeMain());                  }
                     }
                   }
               ),

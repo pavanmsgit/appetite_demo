@@ -8,6 +8,164 @@ import 'package:appetite_demo/mainScreens/splash.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_static_maps_controller/google_static_maps_controller.dart';
+//import "package:latlong/latlong.dart" as latLng;
+
+
+
+class MapsPage extends StatefulWidget {
+  @override
+  _MapsPageState createState() => _MapsPageState();
+}
+
+class _MapsPageState extends State<MapsPage> {
+  List<String> data;
+  String uid, name, email, photoUrl, phone;
+
+  //INTIALIZE PAGE WITH USER DATA
+  @override
+  void initState() {
+    getUserData();
+    _getCurrentLocation();
+    super.initState();
+  }
+
+  //CHECKING USER DATA
+  getUserData() async {
+    data = await UserData().getUserData();
+    UserData().getUserData().then((result) {
+      setState(() => data = result);
+    });
+    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
+    uid = data[0];
+    name = data[1];
+    email = data[2];
+    photoUrl = data[3];
+    phone = data[4];
+  }
+
+
+  GoogleMapController _mapController ;
+
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+  }
+
+
+
+
+  Stream _getStream() {
+    var qs = FirebaseFirestore.instance
+        .collection("users")
+        //.where('order_by_uid', isEqualTo: uid)
+        .snapshots();
+    print('${qs.single}');
+    return qs;
+  }
+
+
+  ///MAPS STUFF
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  Position _currentPosition;
+  List myMarker=[];
+
+
+
+
+  _getCurrentLocation() {
+    geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+      // _getAddressFromLatLng();
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: GoogleMap(
+         myLocationButtonEnabled: true,
+                     myLocationEnabled: true,
+         zoomControlsEnabled: true,
+                     zoomGesturesEnabled: true,
+        //onTap: _handletap,
+        //onMapCreated: onMapCreated(),
+         onMapCreated: _onMapCreated,
+
+                         //myMarker=[];
+                        // _getAddressFromLatLng(tappedpoint.latitude,tappedpoint.longitude);
+      //latx=tappedpoint.latitude;
+      //lonx=tappedpoint.longitude;
+                       /*  myMarker.add(
+
+                             Marker(
+                           markerId: MarkerId('User'),
+                           position: LatLng(_currentPosition.latitude,_currentPosition.longitude),
+                           draggable: true,
+
+                           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+                            onDragEnd: (dragPosition) async {
+                                 print(dragPosition.toString());
+                                 // _getAddressFromLatLng(tappedpoint.latitude,tappedpoint.longitude);
+                //latx=tappedpoint.latitude;
+                //lonx=tappedpoint.longitude;
+                               }
+                         )
+                         );*/
+
+
+
+
+        mapType: MapType.normal,
+        //markers: Set.from(myMarker),
+        initialCameraPosition: CameraPosition(target: LatLng(12.642748303085364, 77.43987996749236), zoom: 15),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///PREVIOUS CODE
+///
+///
+///
+/*import 'dart:async';
+
+import 'package:appetite_demo/auth/userData.dart';
+import 'package:appetite_demo/helpers/appBarDefault.dart';
+import 'package:appetite_demo/helpers/loadingPage.dart';
+import 'package:appetite_demo/helpers/style.dart';
+import 'package:appetite_demo/mainScreens/splash.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
 import 'package:latlng/latlng.dart';
 import 'package:map/map.dart';
 
@@ -18,7 +176,30 @@ class MapsPage extends StatefulWidget {
 
 class _MapsPageState extends State<MapsPage> {
   List<String> data;
-  String uid, name, email, photoUrl;
+  String uid, name, email, photoUrl, phone;
+
+  //INTIALIZE PAGE WITH USER DATA
+  @override
+  void initState() {
+    getUserData();
+    super.initState();
+  }
+
+  //CHECKING USER DATA
+  getUserData() async {
+    data = await UserData().getUserData();
+    UserData().getUserData().then((result) {
+      setState(() => data = result);
+    });
+    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
+    uid = data[0];
+    name = data[1];
+    email = data[2];
+    photoUrl = data[3];
+    phone = data[4];
+  }
+
+
 
   /* Completer<GoogleMapController> _controller = Completer();
 
@@ -82,30 +263,12 @@ class _MapsPageState extends State<MapsPage> {
     controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 */
-  //INTIALIZE PAGE WITH USER DATA
-  @override
-  void initState() {
-    getUserData();
-    super.initState();
-  }
 
-  //CHECKING USER DATA
-  getUserData() async {
-    data = await UserData().getUserData();
-    UserData().getUserData().then((result) {
-      setState(() => data = result);
-    });
-    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
-    uid = data[0];
-    name = data[1];
-    email = data[2];
-    photoUrl = data[3];
-  }
 
   Stream _getStream() {
     var qs = FirebaseFirestore.instance
         .collection("orders")
-        .where('order_by_uid', isEqualTo: uid)
+        //.where('order_by_uid', isEqualTo: uid)
         .snapshots();
     print('${qs.single}');
     return qs;
@@ -178,3 +341,12 @@ class _MapsPageState extends State<MapsPage> {
 
 
 }
+
+
+
+
+*/
+
+
+
+
