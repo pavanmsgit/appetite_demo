@@ -1,23 +1,17 @@
-import 'dart:io';
 import 'dart:math';
-
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/appBarDefault.dart';
-
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/models/shopModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:geolocator/geolocator.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class RegisterUser extends StatefulWidget {
   const RegisterUser({Key key}) : super(key: key);
@@ -28,21 +22,38 @@ class RegisterUser extends StatefulWidget {
 
 class _RegisterUserState extends State<RegisterUser> {
   TextEditingController controllerUserPhone = TextEditingController();
+  TextEditingController controllerUserCollegeName = TextEditingController();
 
   bool isLoading = false;
+  int gender = 0;
 
   List<String> data;
   String uid, name, email, photoUrl;
+
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  Position _currentPosition;
+  String _currentAddress;
+
+  GeoPoint point = GeoPoint(44.44, 23.21);
+
+  var status ;
+
+
 
   //INTIALIZE PAGE WITH USER DATA
   @override
   void initState() {
     getUserData();
+
     super.initState();
+    //getLocation();
+    //_getCurrentLocation();
   }
 
   //CHECKING USER DATA
   getUserData() async {
+
+
     data = await UserData().getUserData();
     UserData().getUserData().then((result) {
       setState(() => data = result);
@@ -54,8 +65,20 @@ class _RegisterUserState extends State<RegisterUser> {
     photoUrl = data[3];
   }
 
+
+  checkGender(gender){
+    if(gender == 0){
+      return 'BOY';
+    }else if(gender == 1){
+      return 'GIRL';
+    }else if(gender == 2){
+      return 'OTHERS';
+    }
+  }
+
   addBottomBadgeToAddStore() {
     if (controllerUserPhone.text.length == 10) {
+      String selectedGender = checkGender(gender);
       return Padding(
         padding: const EdgeInsets.all(12.0),
         child: Container(
@@ -90,10 +113,7 @@ class _RegisterUserState extends State<RegisterUser> {
               ///IMPORTANT ADDING DATA TO FIRESTORE
               ///AND FIREBASE STORAGE
 
-
-
-
-
+              status = await Permission.locationWhenInUse.request().isGranted;
 
                 setState(() {
                   isLoading = true;
@@ -118,13 +138,16 @@ class _RegisterUserState extends State<RegisterUser> {
                   'user_email': email,
                   'user_phone': controllerUserPhone.text,
                   'user_registered_timestamp': DateTime.now(),
+                  'user_location': point,
+                  'user_gender': selectedGender,
+                  'user_college_name': controllerUserCollegeName.text
                 });
 
                 EasyLoading.showSuccess('Registered',
                     maskType: EasyLoadingMaskType.custom);
-
+              }
               // Navigator.pop(context);
-            },
+
           ),
         ),
       );
@@ -169,10 +192,62 @@ class _RegisterUserState extends State<RegisterUser> {
                     padding: EdgeInsets.all(8.0),
                     child: Center(
                       child: Text(
-                        "PLEASE ENTER YOUR PHONE NUMBER, TO CONTINUE",
+                        "PLEASE ENTER YOUR DETAILS, TO CONTINUE",
                         style: TextStyle(
                             fontSize: 11, fontWeight: FontWeight.w200),
                       ),
+                    ),
+                  ),
+                ),
+
+
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 30, left: 20, right: 10,bottom: 30),
+                    child: ToggleSwitch(
+                        minWidth: size.width * 0.5,
+                        inactiveBgColor: Colors.white,
+                        activeBgColor: tertiary,
+                        initialLabelIndex: gender,
+                        fontSize: 11,
+                        cornerRadius: 20.0,
+                        labels: ['BOY', 'GIRL', 'OTHERS'],
+                        onToggle: (index) => setState(() => gender = index)),
+                  ),
+                ),
+
+                ///COLLEGE NAME
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        ///COLLEGE NAME
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 25),
+                          child: TextField(
+                            controller: controllerUserCollegeName,
+                            keyboardType: TextInputType.text,
+                            cursorColor: Colors.black,
+                            autofocus: false,
+                            maxLength: 25,
+                            maxLines: 1,
+                            autocorrect: true,
+                            onChanged: (text) {
+                            },
+                            textAlign: TextAlign.justify,
+                            decoration: InputDecoration(
+                              hintMaxLines: 1,
+                              hintText: "College Name",
+                              hintStyle: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w100,
+                                  color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -195,12 +270,7 @@ class _RegisterUserState extends State<RegisterUser> {
                             maxLength: 10,
                             autocorrect: true,
                             onChanged: (text) {
-                              setState(
-                                () {
-                                  var sellerNumber = controllerUserPhone.text;
-                                  print(sellerNumber);
-                                },
-                              );
+
                             },
                             textAlign: TextAlign.justify,
                             decoration: InputDecoration(

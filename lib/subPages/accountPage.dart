@@ -12,6 +12,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class AccountPage extends StatefulWidget {
   _AccountPageState createState() => _AccountPageState();
@@ -19,12 +20,16 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   TextEditingController controllerUserName = TextEditingController();
-  //TextEditingController controllerUserEmail = TextEditingController();
+  TextEditingController controllerUserCollege = TextEditingController();
   TextEditingController controllerUserPhone = TextEditingController();
 
   bool editName = false;
   bool editNumber = false;
+  bool editGender = false;
+  bool editCollege = false;
   bool editPhoto = false;
+
+  int gender = 0;
 
   List<String> data;
   String uid, name, email, photoUrl, phone;
@@ -50,10 +55,22 @@ class _AccountPageState extends State<AccountPage> {
     phone = data[4];
   }
 
+  checkGender(gender){
+    if(gender == 0){
+      return 'BOY';
+    }else if(gender == 1){
+      return 'GIRL';
+    }else if(gender == 2){
+      return 'OTHERS';
+    }
+  }
+
+
+
   checkEditName(userName) {
     if (editName == false) {
       return Container(
-        height: 50,
+        height: 40,
         child: ListTile(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -150,7 +167,7 @@ class _AccountPageState extends State<AccountPage> {
     if (editNumber == false) {
 
       return Container(
-        height: 50,
+        height: 40,
         child: ListTile(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -242,6 +259,189 @@ class _AccountPageState extends State<AccountPage> {
     }
   }
 
+
+  checkEditGender(userGender,size)  {
+    String selectedGender = checkGender(gender);
+
+    if (editGender == false) {
+      return Container(
+        height: 40,
+        child: ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 50),
+                    child: Text(
+                      'GENDER : ',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  )),
+              Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 0),
+                    child: Text(
+                      userGender,
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  )),
+            ],
+          ),
+          trailing: IconButton(
+            icon: Icon(
+              Icons.edit,
+              size: 20,
+              color: tertiary,
+            ),
+            onPressed: () {
+              setState(() {
+                editGender = true;
+              });
+            },
+          ),
+        ),
+      );
+    } else {
+      return ListTile(
+        title: Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 10, left: 0, right: 0,bottom: 10),
+              child: ToggleSwitch(
+                  minWidth: size.width * 0.2,
+                  inactiveBgColor: Colors.white,
+                  activeBgColor: tertiary,
+                  initialLabelIndex: gender,
+                  fontSize: 11,
+                  cornerRadius: 20.0,
+                  labels: ['BOY', 'GIRL', 'OTHERS'],
+                  onToggle: (index) => setState(() => gender = index)),
+            ),),
+        trailing: IconButton(
+          icon: Icon(
+            Icons.check_rounded,
+            size: 30,
+            color: tertiary,
+          ),
+          onPressed: () async {
+            FirebaseFirestore.instance
+                .collection('users')
+                .doc(uid)
+                .update({'user_gender': selectedGender});
+
+            EasyLoading.showSuccess('Updated Gender');
+            setState(() {
+              editGender = false;
+            });
+          },
+        ),
+      );
+    }
+  }
+
+  checkEditCollege(userCollege)  {
+    if (editCollege == false) {
+
+      return Container(
+        height: 40,
+        child: ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 50),
+                    child: Text(
+                      'COLLEGE : ',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  )),
+              Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 0),
+                    child: Text(
+                      userCollege,
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  )),
+            ],
+          ),
+          trailing: IconButton(
+            icon: Icon(
+              Icons.edit,
+              size: 20,
+              color: tertiary,
+            ),
+            onPressed: () {
+              setState(() {
+                editCollege = true;
+              });
+            },
+          ),
+        ),
+      );
+    } else {
+      return ListTile(
+        title: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: 20, horizontal: 25),
+              child: TextField(
+                controller: controllerUserCollege,
+                keyboardType: TextInputType.text,
+                cursorColor: Colors.black,
+                autofocus: false,
+                maxLength: 25,
+                maxLines: 1,
+                autocorrect: true,
+                onChanged: (text) {
+                },
+                textAlign: TextAlign.justify,
+                decoration: InputDecoration(
+                  hintMaxLines: 1,
+                  hintText: "College Name",
+                  hintStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w100,
+                      color: Colors.grey),
+                ),
+              ),
+            ),),
+        trailing: IconButton(
+          icon: Icon(
+            Icons.check_rounded,
+            size: 30,
+            color: tertiary,
+          ),
+          onPressed: () async {
+            FirebaseFirestore.instance
+                .collection('users')
+                .doc(uid)
+                .update({'user_college_name': controllerUserCollege.text});
+
+
+            EasyLoading.showSuccess('Updated College Name');
+            setState(() {
+              editCollege = false;
+            });
+          },
+        ),
+      );
+    }
+  }
+
   checkProfilePhotoUrl(data) {
     String userPhotoUrl = data;
     if (userPhotoUrl == null || userPhotoUrl == '') {
@@ -305,7 +505,7 @@ class _AccountPageState extends State<AccountPage> {
                       child: Container(
                         color: Colors.white,
                         child: Column(
-                          children: [card(context, userDetails)],
+                          children: [card(context, userDetails,size)],
                         ),
                       ),
                     ),
@@ -322,11 +522,14 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget card(BuildContext context, data) {
+  Widget card(BuildContext context, data, size) {
     var userName = data["user_name"];
     var userEmail = data["user_email"];
     var userPhone = data["user_phone"];
     var userLogo = data["user_logo"];
+    var userGender = data["user_gender"];
+    var userCollege = data["user_college_name"];
+
     addNumberToSharedPrefs(userPhone);
 
     final auth = Provider.of<AuthProvider>(context);
@@ -337,14 +540,16 @@ class _AccountPageState extends State<AccountPage> {
           padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 0),
         ),
 
-        ///NAME AND EMAIL
+        ///USER DATA
         Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               checkProfilePhotoUrl(userLogo),
               checkEditName(userName),
+              checkEditGender(userGender,size),
               checkEditPhone(userPhone),
+              checkEditCollege(userCollege),
               Container(
                 height: 40,
                 child: ListTile(
@@ -448,24 +653,27 @@ class _AccountPageState extends State<AccountPage> {
         ),
 
         Divider(
-          height: 20.0,
+          height: 5.0,
           color: Colors.black,
         ),
-        SizedBox(height: 2),
 
-        ListTile(
-          title: Padding(
-            padding: EdgeInsets.only(left: 20),
-            child: Text(
-              'About',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w400),
+
+        Container(
+          height: 50,
+          child: ListTile(
+            title: Padding(
+              padding: EdgeInsets.only(left: 20),
+              child: Text(
+                'About',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400),
+              ),
             ),
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.arrow_forward_ios_rounded),
+            trailing: IconButton(
+              icon: Icon(Icons.arrow_forward_ios_rounded),
+            ),
           ),
         ),
 

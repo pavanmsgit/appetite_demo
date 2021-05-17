@@ -61,6 +61,8 @@ dependencies:
   anim_search_bar: ^2.0.1
   permission_handler: ^5.0.1+1
 
+  flutter_rating_bar: ^4.0.0
+
 
 
   progress_dialog: ^1.2.4
@@ -68,14 +70,12 @@ dependencies:
 
   google_maps_flutter: ^2.0.3
   geolocator: ^5.3.2+2
+
+  location: ^3.0.0
   #flutter_polyline_points: ^1.0.0
 
   razorpay_flutter: ^1.2.2
 
-  google_static_maps_controller: ^0.5.0
-
-  #map: ^0.3.0
-  #latlng: ^0.1.0
 
 
   #STORAGE AND SHARED PREFERENCES

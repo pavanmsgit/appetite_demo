@@ -32,7 +32,7 @@ class Splash extends StatelessWidget {
             child: LoadingBouncingGrid.square(
               size: 70.0,
               //inverted: true,
-              backgroundColor: secondary,
+              backgroundColor: tertiary,
               duration: Duration(milliseconds: 1000),
             ),
           ),

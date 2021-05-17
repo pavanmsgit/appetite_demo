@@ -160,10 +160,42 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
   }
 
 
-  checkPhoneNumber(phone, friendPhone, friendName){
-    if(phone==null){
+  checkPhoneNumber(orderPickUpMode,order){
+    if(orderPickUpMode==1){
       return  Column(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 40.0, right: 20.0, top: 5),
+                child: Text(
+                  'Phone Number',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 40.0, right: 20.0, top: 5),
+                child: Text(
+                  order.order_by_phone,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: tertiary),
+                ),
+              ),
+            ],
+          ),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -186,7 +218,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                 padding: EdgeInsets.only(
                     left: 40.0, right: 20.0, top: 5),
                 child: Text(
-                  friendName,
+                  order.friend_name,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -203,25 +235,21 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                 padding: EdgeInsets.only(
                     left: 40.0, right: 20.0, top: 5),
                 child: Text(
-                  'Phone Number',
+                  'Friend Phone Number',
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                       color: Colors.grey),
                 ),
               ),
-
-
             ],
           ),
-
-
           Row(children: [
             Padding(
               padding: EdgeInsets.only(
                   left: 40.0, right: 20.0, top: 5),
               child: Text(
-                friendPhone,
+                order.friend_number,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -232,7 +260,8 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
 
         ],
       );
-    }else if(friendPhone==null){
+    }
+    else if(orderPickUpMode==0){
       return Column(
         children: [
           Row(
@@ -257,7 +286,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                 padding: EdgeInsets.only(
                     left: 40.0, right: 20.0, top: 5),
                 child: Text(
-                  phone,
+                  order.order_by_phone,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -305,7 +334,9 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
 
     var totalPrice = double.parse(order.order_total_price);
 
-    double gst = totalPrice * 0.18;
+
+    double withoutGst = totalPrice - totalPrice * 0.15;
+    double gst = totalPrice - withoutGst.truncate();
 
     int orderDate = order.order_timestamp.millisecondsSinceEpoch;
     final orderDateFormat = DateFormat('dd-MM-yyyy hh:mm a');
@@ -507,10 +538,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                             ],
                           ),
 
-                          Divider(
-                              thickness: 0.2,
-                              color: tertiary
-                          ),
+
                         ],
                       ),
                     ),
@@ -608,7 +636,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                               thickness: 0.2,
                               color: tertiary
                           ),
-                          Row(
+                        /*  Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Padding(
@@ -626,23 +654,23 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                 padding: EdgeInsets.only(
                                     left: 0.0, right: 40.0, top: 15),
                                 child: Text(
-                                  'Rs. ${order.order_total_price}',
+                                  'Rs. ${withoutGst.truncate()}',
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400),
                                 ),
                               ),
                             ],
-                          ),
+                          ),*/
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Padding(
                                 padding: EdgeInsets.only(
-                                    left: 40.0, right: 20.0, top: 15),
+                                    left: 40.0, right: 20.0, top: 10),
                                 child: Text(
-                                  'GST',
+                                  'GST & Other Taxes',
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
@@ -683,7 +711,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                 padding: EdgeInsets.only(
                                     left: 0.0, right: 40.0, top: 5),
                                 child: Text(
-                                  'Rs. ${totalPrice +gst.truncate()}',
+                                  'Rs. ${order.order_total_price}',
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400),
@@ -734,7 +762,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                 padding: EdgeInsets.only(
                                     left: 40.0, right: 20.0, top: 5),
                                 child: Text(
-                                  'Order Number',
+                                  'Order ID',
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -760,7 +788,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                             ],
                           ),
 
-                          ///PAYMENT
+                          ///PAYMENT MODE
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -768,7 +796,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                 padding: EdgeInsets.only(
                                     left: 40.0, right: 20.0, top: 5),
                                 child: Text(
-                                  'Payment',
+                                  'Payment Mode',
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -782,11 +810,12 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                             children: [
                               Padding(
                                 padding: EdgeInsets.only(
-                                    left: 40.0, right: 20.0, top: 5),
+                                    left: 40.0, right: 20.0, top: 0),
                                 child: checkPayment(order.order_payment_mode),
                               ),
                             ],
                           ),
+
 
                           ///DATE
                           Row(
@@ -823,9 +852,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                           ),
 
                           ///PHONE NUMBER
-
-                          checkPhoneNumber(order.order_by_phone, order.friend_number,order.friend_name)
-
+                          checkPhoneNumber(order.order_pickup_mode,order)
 
                         ],
                       ),

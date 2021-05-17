@@ -1,17 +1,18 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:appetite_demo/auth/googleSignIn.dart';
 import 'package:appetite_demo/auth/userData.dart';
-import 'package:appetite_demo/helpers/appBarDefault.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
+import 'package:appetite_demo/models/shopModel.dart';
 import 'package:appetite_demo/subPages/accountPage.dart';
 import 'package:appetite_demo/subPages/homePage.dart';
 import 'package:appetite_demo/subPages/mapsPage.dart';
 import 'package:appetite_demo/subPages/searchPage.dart';
 import 'package:appetite_demo/subPages/orderPage.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class HomeMain extends StatefulWidget {
@@ -19,18 +20,45 @@ class HomeMain extends StatefulWidget {
   _HomeMainState createState() => _HomeMainState();
 }
 
-class _HomeMainState extends State<HomeMain> with SingleTickerProviderStateMixin {
+class _HomeMainState extends State<HomeMain>
+    with SingleTickerProviderStateMixin {
   int _selectedPageIndex = 0;
 
   List<String> data;
   String uid, name, email, photoUrl, phone;
+  var lat, lng;
+  GeoPoint point;
+
+  List<UserModelCustom> list = [];
 
   //INTIALIZE PAGE WITH USER DATA
   @override
   void initState() {
     getUserData();
+    addLocationLive();
+    //fetchData();
     super.initState();
   }
+
+  Future<List<UserModelCustom>> fetchData() async {
+    await FirebaseFirestore.instance.collection("users").get().then((value) {
+      for (int i = 0; i < value.docs.length; i++) {
+        UserModelCustom userModelCustom = UserModelCustom(
+            value.docs[i]['user_id'],
+            value.docs[i]['user_name'],
+            value.docs[i]['user_phone'],
+            value.docs[i]['user_location'],
+          value.docs[i]['user_gender'],
+        value.docs[i]['user_college_name']);
+        list.add(userModelCustom);
+        //print('HEY $list');
+      }
+    });
+    return list;
+  }
+
+
+
 
   //CHECKING USER DATA
   getUserData() async {
@@ -46,7 +74,26 @@ class _HomeMainState extends State<HomeMain> with SingleTickerProviderStateMixin
     phone = data[4];
   }
 
+  addLocationLive() async {
+    Location location = new Location();
+    location.getLocation().then((res) {
+      lat = res.latitude;
+      lng = res.longitude;
+      point = GeoPoint(lat, lng);
 
+      insertLocationToFirestore(); //this function has not to be a stream
+    });
+  }
+
+  insertLocationToFirestore() async {
+    print(
+        'UPDATING USER CURRENT LOCATION ${point.latitude}  ${point.longitude}');
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'user_location': point});
+    print('USER LIVE LOCATION UPDATED');
+  }
 
   CurvedAnimation curve;
 
@@ -59,7 +106,9 @@ class _HomeMainState extends State<HomeMain> with SingleTickerProviderStateMixin
     });
   }
 
+  ///LOCATION STUFF
 
+  Location location = new Location();
 
   //ICON LIST FOR BOTTOM NAVIGATION BAR
   final iconList = <IconData>[
@@ -83,7 +132,6 @@ class _HomeMainState extends State<HomeMain> with SingleTickerProviderStateMixin
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-
       ///ASSIGNS DIFFERENT COMPONENTS WHICH ARE MENTIONED IN THE LIST OF WIDGETS _pageOption.
       body: Container(child: _pageOption[_selectedPageIndex]),
 
@@ -94,9 +142,17 @@ class _HomeMainState extends State<HomeMain> with SingleTickerProviderStateMixin
           Icons.location_pin,
           color: tertiary,
         ),
-        onPressed: () {
-          Navigator.of(context).push(changeScreenUp(MapsPage()));
+        onPressed: () async {
+
+          fetchData().whenComplete(() {
+            print('CHECK LIST $list');
+            Navigator.of(context).push(changeScreenUp(MapsPage(userCustomModelFromPreviousDataFetch: list,)));
+          });
+
+
           print('Floating Action Button Pressed');
+
+          list.clear();
         },
       ),
 
@@ -116,7 +172,7 @@ class _HomeMainState extends State<HomeMain> with SingleTickerProviderStateMixin
         leftCornerRadius: 0,
         rightCornerRadius: 0,
         onTap: (index) => setState(
-              () => _selectPage(index),
+          () => _selectPage(index),
         ),
       ),
 

@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:appetite_demo/auth/googleSignIn.dart';
 import 'package:appetite_demo/auth/userData.dart';
-import 'package:appetite_demo/mainScreens/homeMain.dart';
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
@@ -13,14 +12,13 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
     var width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: primary,
+        backgroundColor: Colors.white,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -53,16 +51,16 @@ class _LoginState extends State<Login> {
                     }
                   },
                   child: Container(
-                    width: 240,
+                    width: 220,
                     height: 50,
                     padding: EdgeInsets.all(0),
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            colors: [Colors.white, Colors.white]),
+                            colors: [secondary, primary]),
                         borderRadius: BorderRadius.circular(50.0),
                         boxShadow: [
                           BoxShadow(
-                              color: Colors.black.withOpacity(.5),
+                              color: secondary.withOpacity(.5),
                               blurRadius: 8.0)
                         ]),
                     child: Material(
@@ -84,7 +82,7 @@ class _LoginState extends State<Login> {
                               child: Text(
                                 'Sign in with Google',
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700),
                               ),

@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/loadingPage.dart';
+import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/subPages/paymentPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,15 +15,21 @@ import 'package:loading_animations/loading_animations.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:location/location.dart';
 
-class MapsPage extends StatefulWidget {
-  MapsPage({@required this.userCustomModelFromPreviousDataFetch});
+class MapsForChoosingContact extends StatefulWidget {
+  MapsForChoosingContact({@required this.userCustomModelFromPreviousDataFetch,@required this.orderList,@required this.size
+  ,@required this.finalPrice,@required this.totalItems,@required this.shop});
   final userCustomModelFromPreviousDataFetch;
+  final List<OrderModel> orderList;
+  final Size size;
+  final String finalPrice;
+  final int totalItems;
+  var shop;
 
   @override
-  _MapsPageState createState() => _MapsPageState();
+  _MapsForChoosingContactState createState() => _MapsForChoosingContactState();
 }
 
-class _MapsPageState extends State<MapsPage> {
+class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
   List<String> data;
   String uid, name, email, photoUrl, phone;
 
@@ -55,6 +63,9 @@ class _MapsPageState extends State<MapsPage> {
   BitmapDescriptor userCustomMapMarker;
   BitmapDescriptor boyCustomMapMarker;
   BitmapDescriptor girlCustomMapMarker;
+
+
+  UserModelCustom selectedUserDataModel;
 
   Set<Marker> markers;
   GoogleMapController _mapController;
@@ -97,8 +108,8 @@ class _MapsPageState extends State<MapsPage> {
     if (customMapMarker == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
-              configuration, "assets/othersMapPointer.png",
-              mipmaps: true)
+          configuration, "assets/othersMapPointer.png",
+          mipmaps: true)
           .then((icon) {
         setState(() {
           customMapMarker = icon;
@@ -111,7 +122,7 @@ class _MapsPageState extends State<MapsPage> {
     if (boyCustomMapMarker == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(configuration, "assets/boyMapPointer.png",
-              mipmaps: true)
+          mipmaps: true)
           .then((icon) {
         setState(() {
           boyCustomMapMarker = icon;
@@ -124,8 +135,8 @@ class _MapsPageState extends State<MapsPage> {
     if (girlCustomMapMarker == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
-              configuration, "assets/girlMapPointer.png",
-              mipmaps: true)
+          configuration, "assets/girlMapPointer.png",
+          mipmaps: true)
           .then((icon) {
         setState(() {
           girlCustomMapMarker = icon;
@@ -138,7 +149,7 @@ class _MapsPageState extends State<MapsPage> {
     if (userCustomMapMarker == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(configuration, "assets/mapMarker.png",
-              mipmaps: true)
+          mipmaps: true)
           .then((icon) {
         setState(() {
           userCustomMapMarker = icon;
@@ -165,6 +176,17 @@ class _MapsPageState extends State<MapsPage> {
                 snippet: 'Phone: ${model.phone}'
             ),
             onTap: () {
+              setState(() {
+                selectedUserDataModel = model;
+                print('${selectedUserDataModel.id} ${selectedUserDataModel.phone}');
+              });
+              EasyLoading.showToast(
+                  "SELECTED \n Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
+                  maskType: EasyLoadingMaskType.clear,
+                  dismissOnTap: true,
+                  toastPosition: EasyLoadingToastPosition.center);
+
+
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
@@ -181,6 +203,15 @@ class _MapsPageState extends State<MapsPage> {
             ),
 
             onTap: () {
+              setState(() {
+                selectedUserDataModel = model;
+                print('${selectedUserDataModel.name} ${selectedUserDataModel.phone}');
+              });
+              EasyLoading.showToast(
+                  "SELECTED \n Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
+                  maskType: EasyLoadingMaskType.clear,
+                  dismissOnTap: true,
+                  toastPosition: EasyLoadingToastPosition.center);
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
@@ -197,16 +228,19 @@ class _MapsPageState extends State<MapsPage> {
                 snippet: 'Phone: ${model.phone}'
             ),
             onTap: () {
-             /* EasyLoading.showToast(
-                  "Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
-                  maskType: EasyLoadingMaskType.black,
+              setState(() {
+                selectedUserDataModel = model;
+                print('${selectedUserDataModel.name} ${selectedUserDataModel.phone}');
+              });
+              EasyLoading.showToast(
+                  "SELECTED \n Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
+                  maskType: EasyLoadingMaskType.clear,
                   dismissOnTap: true,
-                  toastPosition: EasyLoadingToastPosition.center);*/
+                  toastPosition: EasyLoadingToastPosition.center);
 
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
-
 
 
         Marker b = Marker(
@@ -220,6 +254,16 @@ class _MapsPageState extends State<MapsPage> {
                 snippet: 'Phone: ${model.phone}'
             ),
             onTap: () {
+              setState(() {
+                selectedUserDataModel = model;
+                print('${selectedUserDataModel.name} ${selectedUserDataModel.phone}');
+              });
+               EasyLoading.showToast(
+                  "SELECTED \n Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
+                  maskType: EasyLoadingMaskType.clear,
+                  dismissOnTap: true,
+                  toastPosition: EasyLoadingToastPosition.center);
+
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
@@ -237,6 +281,77 @@ class _MapsPageState extends State<MapsPage> {
       _mapController = controller;
     });
   }
+
+
+  setUpBottomSheet(){
+    if(selectedUserDataModel != null){
+      return Padding(
+        padding: EdgeInsets.all(12.0),
+        child: Container(
+          margin: EdgeInsets.only(bottom: 20,left: 10,right: 50),
+          height: 60,
+          width: double.infinity,
+          child: ElevatedButton(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Rs. ',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '${widget.finalPrice}',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "Proceed to Payment >>",
+                      style:
+                      TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                    )
+                  ],
+                ),
+              ),
+              style: ButtonStyle(
+                elevation: MaterialStateProperty.all(1.0),
+                foregroundColor: MaterialStateProperty.all<Color>(primary),
+                backgroundColor: MaterialStateProperty.all<Color>(tertiary),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: tertiary),
+                  ),
+                ),
+              ),
+              onPressed: ()  async{
+
+                Navigator.of(context).push(changeScreenSide(PaymentPage(
+                  userCustomModelFromPreviousDataFetch: selectedUserDataModel,
+                  orderList: widget.orderList,
+                  size: widget.size,
+                  finalPrice: widget.finalPrice,
+                  shop: widget.shop,
+                  totalItems: widget.totalItems,
+                  pickUpMode: 1,
+                )));
+
+
+
+              }
+          ),
+        ),
+      );
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +383,7 @@ class _MapsPageState extends State<MapsPage> {
               return <Widget>[
                 SliverOverlapAbsorber(
                   handle:
-                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                   sliver: SliverAppBar(
                     floating: false,
                     leading: Padding(
@@ -276,9 +391,9 @@ class _MapsPageState extends State<MapsPage> {
                       child: Container(
                         child: IconButton(
                           icon: Icon(
-                            Icons.keyboard_arrow_down_outlined,
+                            Icons.arrow_back_ios,
                             color: Colors.white,
-                            size: 30,
+                            size: 20,
                           ),
                           onPressed: () {
                             Navigator.pop(context);
@@ -355,6 +470,8 @@ class _MapsPageState extends State<MapsPage> {
               child: loadMaps(),
             ),
           ),
+          bottomNavigationBar: setUpBottomSheet(),
+          extendBody: true,
         ),
       ),
     );
@@ -372,7 +489,7 @@ class _MapsPageState extends State<MapsPage> {
         //onTap: addMarkers(usersLocation),
         markers: markers,
         initialCameraPosition:
-            CameraPosition(target: LatLng(lat, lng), zoom: 10),
+        CameraPosition(target: LatLng(lat, lng), zoom: 10),
       );
     } else {
       return LoadingPage();
@@ -380,197 +497,4 @@ class _MapsPageState extends State<MapsPage> {
   }
 }
 
-///PREVIOUS CODE
-///
-///
-///
-/*import 'dart:async';
 
-import 'package:appetite_demo/auth/userData.dart';
-import 'package:appetite_demo/helpers/appBarDefault.dart';
-import 'package:appetite_demo/helpers/loadingPage.dart';
-import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/mainScreens/splash.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-
-import 'package:latlng/latlng.dart';
-import 'package:map/map.dart';
-
-class MapsPage extends StatefulWidget {
-  @override
-  _MapsPageState createState() => _MapsPageState();
-}
-
-class _MapsPageState extends State<MapsPage> {
-  List<String> data;
-  String uid, name, email, photoUrl, phone;
-
-  //INTIALIZE PAGE WITH USER DATA
-  @override
-  void initState() {
-    getUserData();
-    super.initState();
-  }
-
-  //CHECKING USER DATA
-  getUserData() async {
-    data = await UserData().getUserData();
-    UserData().getUserData().then((result) {
-      setState(() => data = result);
-    });
-    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
-    uid = data[0];
-    name = data[1];
-    email = data[2];
-    photoUrl = data[3];
-    phone = data[4];
-  }
-
-
-
-  /* Completer<GoogleMapController> _controller = Completer();
-
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
-
-  void _onMapCreated(GoogleMapController controller) {
-    _controller.complete(controller);
-  }*/
-
-  final controller = MapController(
-    location: LatLng(12.925803532978822, 77.54612152937699),
-  );
-
-  void _gotoDefault() {
-    controller.center = LatLng(12.642748303085364, 77.43987996749236);
-  }
-
-  void _onDoubleTap() {
-    controller.zoom += 0.5;
-  }
-
-  Offset _dragStart;
-  double _scaleStart = 1.0;
-  void _onScaleStart(ScaleStartDetails details) {
-    _dragStart = details.focalPoint;
-    _scaleStart = 1.0;
-  }
-
-  void _onScaleUpdate(ScaleUpdateDetails details) {
-    final scaleDiff = details.scale - _scaleStart;
-    _scaleStart = details.scale;
-
-    if (scaleDiff > 0) {
-      controller.zoom += 0.02;
-    } else if (scaleDiff < 0) {
-      controller.zoom -= 0.02;
-    } else {
-      final now = details.focalPoint;
-      final diff = now - _dragStart;
-      _dragStart = now;
-      controller.drag(diff.dx, diff.dy);
-    }
-  }
-
-  /*Completer<GoogleMapController> _controller = Completer();
-
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
-
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
-
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
-*/
-
-
-  Stream _getStream() {
-    var qs = FirebaseFirestore.instance
-        .collection("orders")
-        //.where('order_by_uid', isEqualTo: uid)
-        .snapshots();
-    print('${qs.single}');
-    return qs;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
-    return SafeArea(
-      child: Scaffold(
-        body: StreamBuilder<QuerySnapshot>(
-            stream: _getStream(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return NestedScrollView(
-                  headerSliverBuilder:
-                      (BuildContext context, bool innerBoxIsScrolled) {
-                    return <Widget>[
-                      SliverOverlapAbsorber(
-                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                            context),
-                        sliver: sliverAppBarDefaultWithBackButtonDown(size, context)
-                      ),
-                    ];
-                  },
-                 body:  GestureDetector(
-                   onDoubleTap: _onDoubleTap,
-                   onScaleStart: _onScaleStart,
-                   onScaleUpdate: _onScaleUpdate,
-                   onScaleEnd: (details) {
-                     print(
-                         "Location: ${controller.center.latitude}, ${controller.center.longitude}");
-                   },
-                   child: Stack(
-                     children: [
-                       Map(
-                         controller: controller,
-                         builder: (context, x, y, z) {
-                           final url =
-                               'https://www.google.com/maps/vt/pb=!1m4!1m3!1i$z!2i$x!3i$y!2m3!1e0!2sm!3i420120488!3m7!2sen!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0!23i4111425';
-
-                           return Image.network(
-                             url,
-                             fit: BoxFit.cover,
-                           );
-                         },
-                       ),
-                       Center(
-                         child: Icon(Icons.person_pin_circle_rounded, color: tertiary, size: 50,),
-                       ),
-                     ],
-                   ),
-                 ),
-                );
-              }
-
-              return LoadingPage();
-            }),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: tertiary,
-          onPressed: _gotoDefault,
-          tooltip: 'My Location',
-          child: Icon(Icons.my_location),
-        ),
-        // resizeToAvoidBottomInset: false,
-      ),
-    );
-  }
-
-
-}
-
-
-
-
-*/

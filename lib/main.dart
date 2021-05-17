@@ -1,7 +1,5 @@
 import 'package:appetite_demo/auth/googleSignIn.dart';
-import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/mainScreens/homeMain.dart';
 import 'package:appetite_demo/mainScreens/login.dart';
 import 'package:appetite_demo/mainScreens/preHome.dart';
 import 'package:appetite_demo/mainScreens/splash.dart';
@@ -11,8 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:provider/provider.dart';
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,23 +25,22 @@ void main() async {
       child: MyApp(),
     ),
   ));
-
   configLoading();
 }
 
 
 configLoading() {
   EasyLoading.instance
-    ..displayDuration =  Duration(milliseconds: 1000)
+    ..displayDuration =  Duration(milliseconds: 3000)
     ..indicatorType = EasyLoadingIndicatorType.wave
     ..loadingStyle = EasyLoadingStyle.dark
-    ..indicatorSize = 45.0
+    ..indicatorSize = 65.0
     ..radius = 10.0
-    ..progressColor = secondary
-    ..backgroundColor = secondary
-    ..indicatorColor = secondary
-    ..textColor = secondary
-    ..maskColor = secondary.withOpacity(0.5)
+    ..progressColor = tertiary
+    ..backgroundColor = tertiary
+    ..indicatorColor = tertiary
+    ..textColor = tertiary
+    ..maskColor = tertiary.withOpacity(0.5)
     ..userInteractions = false
     ..dismissOnTap = true;
 }

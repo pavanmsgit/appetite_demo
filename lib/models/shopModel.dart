@@ -114,16 +114,20 @@ class ShopReviews {
   String review_by_id;
   String description;
   double ratings;
+  String review_by_photo;
+  String headline;
 
 
   DocumentReference reference;
 
   ShopReviews.fromMap(Map<String, dynamic> map, {this.reference}) {
-    this.review_id = map['item_id'];
-    this.review_by_name = map['item_name'];
-    this.review_by_id = map['shop_logo'];
-    this.description = map['shop_overall_rating'];
-    this.ratings = map['shop_average_price'];
+    this.review_id = map['review_id'];
+    this.review_by_name = map['review_by_name'];
+    this.review_by_id = map['review_by_id'];
+    this.description = map['description'];
+    this.ratings = map['ratings'];
+    this.review_by_photo = map['review_by_photo'];
+    this.headline = map['headline'];
   }
 
   ShopReviews.fromSnapshot(DocumentSnapshot snapshot)
@@ -135,6 +139,8 @@ class ShopReviews {
         this.review_by_id,
         this.description,
         this.ratings,
+        this.review_by_photo,
+        this.headline
       });
 }
 
@@ -200,7 +206,9 @@ class Orders{
   int order_status;
   String friend_name;
   String friend_number;
+  String friend_college;
   Timestamp order_timestamp;
+  int order_payment_status;
 
 
   DocumentReference reference;
@@ -222,7 +230,9 @@ class Orders{
     this.order_status = map['order_status'];
     this.friend_name=map['friend_name'];
     this.friend_number=map['friend_number'];
+    this.friend_college=map['friend_college'];
     this.order_timestamp = map['order_timestamp'];
+    this.order_payment_status = map['order_payment_status'];
   }
 
   Orders.fromSnapshot(DocumentSnapshot snapshot)
@@ -245,7 +255,9 @@ class Orders{
         this.order_status,
         this.friend_name,
         this.friend_number,
-        this.order_timestamp
+        this.friend_college,
+        this.order_timestamp,
+        this.order_payment_status
       });
 
 }
@@ -289,5 +301,61 @@ class OrderItems{
 
 
 
+class UserDataModelMain{
+  //ShopElements
+  String user_id;
+  String user_name;
+  GeoPoint user_location;
+  String user_logo;
+  String user_phone;
+  String user_email;
+  String user_gender;
+  String user_college_name;
 
+
+
+  DocumentReference reference;
+
+  UserDataModelMain.fromMap(Map<String, dynamic> map, {this.reference}) {
+    this.user_id = map['user_id'];
+    this.user_name = map['user_name'];
+    this.user_location = map['user_location'];
+    this.user_logo = map['user_logo'];
+    this.user_phone = map['user_phone'];
+    this.user_email = map['user_email'];
+    this.user_gender = map['user_gender'];
+    this.user_college_name = map['user_college_name'];
+  }
+
+  UserDataModelMain.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data(), reference: snapshot.reference);
+
+  UserDataModelMain(
+      {this.user_id,
+        this.user_name,
+        this.user_location,
+        this.user_logo,
+        this.user_phone,
+        this.user_email,
+        this.user_gender,
+        this.user_college_name
+      });
+
+}
+
+
+
+
+
+class UserModelCustom{
+  String id;
+  String name;
+  String phone;
+  GeoPoint location;
+  String gender;
+  String collegeName;
+
+
+  UserModelCustom(this.id,this.name,this.phone,this.location,this.gender, this.collegeName);
+}
 

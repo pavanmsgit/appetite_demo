@@ -1,13 +1,11 @@
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/auth/userModel.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/helpers/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 enum Status {
   Uninitialized,
@@ -20,14 +18,12 @@ enum Status {
 class AuthProvider with ChangeNotifier {
   FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
-  UserServices _userServices = UserServices();
   UserModel _userModel;
   UserData _userData;
   User _user;
   Status _status = Status.Uninitialized;
   Status get status => _status;
   static const LOGGED_IN = "loggedIn";
-
   bool loggedIn;
   bool loggedOut;
   bool loading = false;
@@ -36,7 +32,6 @@ class AuthProvider with ChangeNotifier {
   UserModel get userModel => _userModel;
   UserData get userData => _userData;
   User get user => _user;
-  UserServices _userServicse = UserServices();
 
   AuthProvider.initialize() {
     readPrefs();
@@ -47,7 +42,7 @@ class AuthProvider with ChangeNotifier {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       loggedIn = prefs.getBool('loggedIn');
 
-      print('TYTYTTTTTTTTTTTTTTTTYTYTTTTTTTTTT $loggedIn');
+      print('USER STATUS $loggedIn');
 
       if (loggedIn == true) {
         _status = Status.Authenticated;
@@ -78,17 +73,15 @@ class AuthProvider with ChangeNotifier {
       final UserCredential authResult =
           await _auth.signInWithCredential(credential);
       final User user = authResult.user;
-
       assert(user.email != null);
       assert(user.displayName != null);
-
       assert(!user.isAnonymous);
       assert(await user.getIdToken() != null);
       print(user.photoURL);
       print(user.email);
       print(user.uid);
       print(user.displayName);
-
+      //ADDING DATA TO SHARED PREFERENCES
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('authId', user.uid);
       prefs.setString('name', user.displayName);
@@ -98,10 +91,9 @@ class AuthProvider with ChangeNotifier {
 
       _status = Status.Authenticated;
       notifyListeners();
-
       final User currentUser = _auth.currentUser;
       assert(user.uid == currentUser.uid);
-      print('ISISISISIISISISS $user');
+      print('USER DATA CHECK $user');
     } catch (e) {
       print("${e.toString()}");
     }
@@ -134,14 +126,14 @@ class AuthProvider with ChangeNotifier {
           style: TextStyle(color: Colors.white),
         ),
         actions: <Widget>[
-          FlatButton(
+          ElevatedButton(
             child: Text(
               "No",
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () => Navigator.pop(context, false),
           ),
-          FlatButton(
+          ElevatedButton(
             child: Text(
               "Yes",
               style: TextStyle(color: Colors.white),

@@ -10,8 +10,8 @@ class LoadingPage extends StatelessWidget {
       child: LoadingBumpingLine.square(
         size: 60.0,
         //inverted: true,
-        backgroundColor: secondary,
-        borderColor: secondary,
+        backgroundColor: tertiary,
+        borderColor: tertiary,
         duration: Duration(milliseconds: 500),
       ),
     ),);

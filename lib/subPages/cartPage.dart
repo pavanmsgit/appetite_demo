@@ -6,6 +6,8 @@ import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/main.dart';
 import 'package:appetite_demo/mainScreens/homeMain.dart';
 import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/subPages/mapsForChoosingContact.dart';
+import 'package:appetite_demo/subPages/paymentPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contact_picker/contact_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -39,7 +41,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   int pickUpMode = 0;
-  int paymentMode = 0;
+  //int paymentMode = 0;
   TextEditingController controllerName = TextEditingController();
   TextEditingController controllerNumber = TextEditingController();
   TextEditingController controllerUserNumber = TextEditingController();
@@ -57,10 +59,13 @@ class _CartPageState extends State<CartPage> {
   List<String> data;
   String uid, name, email, photoUrl, phone;
 
+  List<UserModelCustom> list = [];
+
   //INTIALIZE PAGE WITH USER DATA
   @override
   void initState() {
     getUserData();
+    fetchData();
     super.initState();
   }
 
@@ -79,9 +84,25 @@ class _CartPageState extends State<CartPage> {
   }
 
 
+  Future<List<UserModelCustom>> fetchData() async {
+    await FirebaseFirestore.instance.collection("users").get().then((value) {
+      for (int i = 0; i < value.docs.length; i++) {
+        UserModelCustom userModelCustom = UserModelCustom(
+            value.docs[i]['user_id'],
+            value.docs[i]['user_name'],
+            value.docs[i]['user_phone'],
+            value.docs[i]['user_location'],
+            value.docs[i]['user_gender'],
+            value.docs[i]['user_college_name']);
+        list.add(userModelCustom);
+        //print('HEY $list');
+      }
+    });
+    return list;
+  }
 
   checkVegOrNonVeg(type) {
-    if (type == 1) {
+    if (type == 0) {
       return Container(
         child: Icon(
           Icons.recommend,
@@ -89,7 +110,7 @@ class _CartPageState extends State<CartPage> {
           size: 20,
         ),
       );
-    } else if (type == 2) {
+    } else if (type == 1) {
       return Container(
         child: Icon(
           Icons.recommend,
@@ -136,22 +157,40 @@ class _CartPageState extends State<CartPage> {
               ],
             ),
           ),
-          
-          Padding(padding: EdgeInsets.only(),child:  Center(
-              child: Padding(
-                padding: EdgeInsets.only(left: 0),
-                child: Text(
-                  'TO CHANGE PHONE NUMBER. PLEASE GO TO ACCOUNT SETTINGS.',
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 8,
-                      fontWeight: FontWeight.w400),
-                ),
-              )),)
+
+          Center(
+            child: Padding(
+              padding: EdgeInsets.only(left: 0),
+              child: Text(
+                'TO CHANGE PHONE NUMBER. PLEASE GO TO ACCOUNT SETTINGS.',
+                style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+          ),
         ],
       );
     } else {
-      return Column(
+      return Container(
+        child:  Center(
+          child: Padding(
+            padding: EdgeInsets.only(left: 0,top: 30),
+            child: Text(
+              'CLICK ON THE BUTTON BELOW TO ADD FRIEND DETAILS.',
+              style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w400),
+            ),
+          ),
+        ),
+      );
+
+
+
+      /*return Column(
         children: [
 
           ElevatedButton(
@@ -161,22 +200,11 @@ class _CartPageState extends State<CartPage> {
 
               var contact = await _contactPicker.selectContact();
               setState(() {
+
                // _contact = contact;
               });
 
-
               print(contact.fullName);
-
-              /*List<Contact> contacts = await FlutterContacts.getContacts();
-
-              // Get all contacts (fully fetched)
-              contacts = await FlutterContacts.getContacts(
-                  withProperties: true, withPhoto: true);
-
-              print(contacts);*/
-
-             /* final PhoneContact contact = await FlutterContactPicker.pickPhoneContact();
-              print(contact);*/
 
             }
 
@@ -185,7 +213,7 @@ class _CartPageState extends State<CartPage> {
           child: Text('PICK CONTACTS'),
           ),
 
-          /*Padding(
+          *//*Padding(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
             child: TextField(
               controller: controllerName,
@@ -220,9 +248,9 @@ class _CartPageState extends State<CartPage> {
                     color: Colors.grey),
               ),
             ),
-          ),*/
+          ),*//*
         ],
-      );
+      );*/
     }
   }
 
@@ -373,20 +401,7 @@ class _CartPageState extends State<CartPage> {
               ),
 
 
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 30, left: 10, right: 10),
-                  child: ToggleSwitch(
-                      minWidth: widget.size.width * 0.7,
-                      inactiveBgColor: Colors.white,
-                      activeBgColor: Colors.black,
-                      initialLabelIndex: paymentMode,
-                      fontSize: 11,
-                      cornerRadius: 20.0,
-                      labels: ['PAY ON PICK-UP', 'UPI / DEBIT CARD'],
-                      onToggle: (index) => setState(() => paymentMode = index)),
-                ),
-              ),
+
 
               SliverPadding(
                 padding: EdgeInsets.all(80.0),
@@ -396,161 +411,254 @@ class _CartPageState extends State<CartPage> {
 
           // resizeToAvoidBottomInset: false,
 
-          bottomNavigationBar: Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Container(
-              margin: EdgeInsets.only(bottom: 20),
-              height: 60,
-              width: double.infinity,
-              child: ElevatedButton(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              'Rs. ',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '${totalPrice.truncate()}',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "Complete Order",
-                          style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-                        )
-                      ],
-                    ),
-                  ),
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(1.0),
-                    foregroundColor: MaterialStateProperty.all<Color>(primary),
-                    backgroundColor: MaterialStateProperty.all<Color>(tertiary),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: tertiary),
-                      ),
-                    ),
-                  ),
-                  onPressed: ()  async{
-
-                    setState(() {
-                      isLoading = true;
-                    });
-
-                    var rand = new Random();
-
-                    String finalNum = rand.nextInt(100000).toString() +
-                        rand.nextInt(10000).toString() +
-                        rand.nextInt(1000000).toString();
-
-
-                    ///TODO PAYMENT GATEWAY AND PAYMENT MODE IS 1
-                    if(paymentMode==1){
-                      Fluttertoast.showToast(
-                          msg: "Payment through UPI/DEBIT CARD in Development. For instance use pay on pick-up.",
-                          toastLength: Toast.LENGTH_LONG,
-                          gravity: ToastGravity.TOP,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: tertiary,
-                          textColor: Colors.white,
-                          fontSize: 12.0);
-                    } else if(pickUpMode==0){
-                      if(controllerUserNumber.text.isEmpty){
-                        Fluttertoast.showToast(
-                            msg: "Please fill required fields",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: tertiary,
-                            textColor: Colors.white,
-                            fontSize: 12.0);
-                      }else{
-                        FirebaseFirestore.instance.collection('orders').add({
-                          'order_id' : finalNum,
-                          'order_shop_id' : widget.shop.shop_id,
-                          'order_shop_name' : widget.shop.shop_name,
-                          'order_shop_logo' : widget.shop.shop_logo,
-                          'order_shop_overall_rating' : widget.shop.shop_overall_rating,
-                          'order_shop_location' : widget.shop.shop_location,
-                          'order_by_name' : name,
-                          'order_by_uid' : uid,
-                          'order_by_phone' : controllerUserNumber.text,
-                          'order_total_price' : totalPrice.truncate().toString(),
-                          'order_total_quantity' : widget.totalItems,
-                          'order_payment_mode' : paymentMode,
-                          'order_pickup_mode' : pickUpMode,
-                          'order_status' : 0,
-                          'order_timestamp' : DateTime.now()
-
-                        });
-                        for (var orderItems in widget.orderList) {FirebaseFirestore.instance.collection('order_items').add({
-                          'order_id': finalNum,
-                          'item_quantity' : orderItems.quantity,
-                          'item_name' : orderItems.shopItems.item_name,
-                          'item_price' : orderItems.shopItems.item_price,
-                          'item_photo' : orderItems.shopItems.item_photo,
-                          'item_type' : orderItems.shopItems.item_type,
-                        });}
-                        EasyLoading.showSuccess('Order Placed !');
-                        changeScreenReplacement(context, HomeMain());
-                      }
-
-                    }else if(pickUpMode==1){
-                      if(controllerNumber.text.isEmpty || controllerName.text.isEmpty){
-
-                        Fluttertoast.showToast(
-                            msg: "Please fill required fields",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: tertiary,
-                            textColor: Colors.white,
-                            fontSize: 12.0);
-                      }else{
-                        FirebaseFirestore.instance.collection('orders').add({
-                          'order_id' : finalNum,
-                          'order_shop_id' : widget.shop.shop_id,
-                          'order_shop_name' : widget.shop.shop_name,
-                          'order_shop_logo' : widget.shop.shop_logo,
-                          'order_shop_overall_rating' : widget.shop.shop_overall_rating,
-                          'order_shop_location' : widget.shop.shop_location,
-                          'order_by_name' : name,
-                          'order_by_uid' : uid,
-                          'order_total_price' : totalPrice.truncate().toString(),
-                          'order_total_quantity' : widget.totalItems,
-                          'order_payment_mode' : paymentMode,
-                          'order_pickup_mode' : pickUpMode,
-                          'order_status' : 0,
-                          'friend_name' : controllerName.text,
-                          'friend_number' : controllerNumber.text,
-                          'order_timestamp' : DateTime.now()
-                        });
-                        for (var orderItems in widget.orderList) {FirebaseFirestore.instance.collection('order_items').add({'order_id': finalNum,
-                          'item_quantity' : orderItems.quantity,
-                          'item_name' : orderItems.shopItems.item_name,
-                          'item_price' : orderItems.shopItems.item_price,
-                          'item_photo' : orderItems.shopItems.item_photo,
-                          'item_type' : orderItems.shopItems.item_type,
-                        });}
-                        EasyLoading.showSuccess('Order Placed !');
-                        changeScreenReplacement(context, HomeMain());                  }
-                    }
-                  }
-              ),
-            ),
-          ),
+          bottomNavigationBar: getBottomBadge(context, widget.size),
         ),
       ),
     );
   }
+
+
+  getBottomBadge(context,size){
+
+    if(pickUpMode==0){
+      return Padding(
+        padding: EdgeInsets.all(12.0),
+        child: Container(
+          margin: EdgeInsets.only(bottom: 20),
+          height: 60,
+          width: double.infinity,
+          child: ElevatedButton(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Rs. ',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '${totalPrice.truncate()}',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "Proceed to Payment >>",
+                      style:
+                      TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                    )
+                  ],
+                ),
+              ),
+              style: ButtonStyle(
+                elevation: MaterialStateProperty.all(1.0),
+                foregroundColor: MaterialStateProperty.all<Color>(primary),
+                backgroundColor: MaterialStateProperty.all<Color>(tertiary),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: tertiary),
+                  ),
+                ),
+              ),
+              onPressed: ()  async{
+
+                Navigator.of(context).push(changeScreenSide(PaymentPage(
+                  orderList: widget.orderList,
+                  size: widget.size,
+                  finalPrice: totalPrice.truncate().toString(),
+                  shop: widget.shop,
+                  totalItems: widget.totalItems,
+                  pickUpMode: 0,
+                )));
+              }
+          ),
+        ),
+      );
+    }else if(pickUpMode==1){
+      return Padding(
+        padding: EdgeInsets.all(12.0),
+        child: Container(
+          margin: EdgeInsets.only(bottom: 20),
+          height: 60,
+          width: double.infinity,
+          child: ElevatedButton(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Rs. ',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '${totalPrice.truncate()}',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "Continue to Choose Friend >>",
+                      style:
+                      TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                    )
+                  ],
+                ),
+              ),
+              style: ButtonStyle(
+                elevation: MaterialStateProperty.all(1.0),
+                foregroundColor: MaterialStateProperty.all<Color>(primary),
+                backgroundColor: MaterialStateProperty.all<Color>(tertiary),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: tertiary),
+                  ),
+                ),
+              ),
+              onPressed: ()  async{
+
+                fetchData().whenComplete(() {
+                  print('CHECK LIST $list');
+                  Navigator.of(context).push(changeScreenSide(MapsForChoosingContact(
+                    userCustomModelFromPreviousDataFetch : list,
+                    orderList: widget.orderList,
+                    size: widget.size,
+                    finalPrice: totalPrice.truncate().toString(),
+                    shop: widget.shop,
+                    totalItems: widget.totalItems,
+                  )));
+                });
+
+
+                list.clear();
+
+              }
+          ),
+        ),
+      );
+    }
+  }
 }
+
+
+
+
+
+
+
+/* setState(() {
+                  isLoading = true;
+                });
+
+                var rand = new Random();
+
+                String finalNum = rand.nextInt(100000).toString() +
+                    rand.nextInt(10000).toString() +
+                    rand.nextInt(1000000).toString();
+
+
+                ///TODO PAYMENT GATEWAY AND PAYMENT MODE IS 1
+                if(paymentMode==1){
+                  Fluttertoast.showToast(
+                      msg: "Payment through UPI/DEBIT CARD in Development. For instance use pay on pick-up.",
+                      toastLength: Toast.LENGTH_LONG,
+                      gravity: ToastGravity.TOP,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: tertiary,
+                      textColor: Colors.white,
+                      fontSize: 12.0);
+                } else if(pickUpMode==0){
+                  if(controllerUserNumber.text.isEmpty){
+                    Fluttertoast.showToast(
+                        msg: "Please fill required fields",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: tertiary,
+                        textColor: Colors.white,
+                        fontSize: 12.0);
+                  }else{
+                    FirebaseFirestore.instance.collection('orders').add({
+                      'order_id' : finalNum,
+                      'order_shop_id' : widget.shop.shop_id,
+                      'order_shop_name' : widget.shop.shop_name,
+                      'order_shop_logo' : widget.shop.shop_logo,
+                      'order_shop_overall_rating' : widget.shop.shop_overall_rating,
+                      'order_shop_location' : widget.shop.shop_location,
+                      'order_by_name' : name,
+                      'order_by_uid' : uid,
+                      'order_by_phone' : controllerUserNumber.text,
+                      'order_total_price' : totalPrice.truncate().toString(),
+                      'order_total_quantity' : widget.totalItems,
+                      'order_payment_mode' : paymentMode,
+                      'order_pickup_mode' : pickUpMode,
+                      'order_status' : 0,
+                      'order_timestamp' : DateTime.now()
+
+                    });
+                    for (var orderItems in widget.orderList) {FirebaseFirestore.instance.collection('order_items').add({
+                      'order_id': finalNum,
+                      'item_quantity' : orderItems.quantity,
+                      'item_name' : orderItems.shopItems.item_name,
+                      'item_price' : orderItems.shopItems.item_price,
+                      'item_photo' : orderItems.shopItems.item_photo,
+                      'item_type' : orderItems.shopItems.item_type,
+                    });}
+                    EasyLoading.showSuccess('Order Placed !');
+                    changeScreenReplacement(context, HomeMain());
+                  }
+
+                }
+                else if(pickUpMode==1){
+                  if(controllerNumber.text.isEmpty || controllerName.text.isEmpty){
+
+                    Fluttertoast.showToast(
+                        msg: "Please fill required fields",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: tertiary,
+                        textColor: Colors.white,
+                        fontSize: 12.0);
+                  }else{
+                    FirebaseFirestore.instance.collection('orders').add({
+                      'order_id' : finalNum,
+                      'order_shop_id' : widget.shop.shop_id,
+                      'order_shop_name' : widget.shop.shop_name,
+                      'order_shop_logo' : widget.shop.shop_logo,
+                      'order_shop_overall_rating' : widget.shop.shop_overall_rating,
+                      'order_shop_location' : widget.shop.shop_location,
+                      'order_by_name' : name,
+                      'order_by_uid' : uid,
+                      'order_total_price' : totalPrice.truncate().toString(),
+                      'order_total_quantity' : widget.totalItems,
+                      'order_payment_mode' : paymentMode,
+                      'order_pickup_mode' : pickUpMode,
+                      'order_status' : 0,
+                      'friend_name' : controllerName.text,
+                      'friend_number' : controllerNumber.text,
+                      'order_timestamp' : DateTime.now()
+                    });
+                    for (var orderItems in widget.orderList) {FirebaseFirestore.instance.collection('order_items').add({'order_id': finalNum,
+                      'item_quantity' : orderItems.quantity,
+                      'item_name' : orderItems.shopItems.item_name,
+                      'item_price' : orderItems.shopItems.item_price,
+                      'item_photo' : orderItems.shopItems.item_photo,
+                      'item_type' : orderItems.shopItems.item_type,
+                    });}
+                    EasyLoading.showSuccess('Order Placed !');
+                    changeScreenReplacement(context, HomeMain());
+
+                  }
+                }*/

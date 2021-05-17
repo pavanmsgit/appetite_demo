@@ -1,8 +1,12 @@
+import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/subPages/addReview.dart';
 import 'package:appetite_demo/subPages/cartPage.dart';
 import 'package:appetite_demo/subPages/homePageComponents/cartBottomBadge.dart';
+import 'package:appetite_demo/subPages/homePageComponents/foodCategories.dart';
+import 'package:appetite_demo/subPages/homePageComponents/reviewsPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:appetite_demo/subPages/homePageComponents/addButton.dart';
@@ -347,21 +351,101 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
                     ),
 
                     SliverPadding(
-                      padding: EdgeInsets.all(35.0),
+                      padding: EdgeInsets.only(top: 20),
+                    ),
+
+                    SliverToBoxAdapter(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 20,horizontal: 80),
+                        child: InkWell(
+                          onTap: () async {
+                            Navigator.of(context)
+                                .push(changeScreenUp(AddReview(docId: shop.shop_id,)));
+                          },
+                          child: Container(
+                              width: 100,
+                              height: 50,
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                      colors: [tertiary, tertiary]),
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: tertiary.withOpacity(.3),
+                                        offset: Offset(0.4, 0.4),
+                                        blurRadius: 8.0)
+                                  ]),
+                              child:Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 0,right: 20),
+                                    child: Icon(
+                                      Icons.rate_review_rounded,
+                                      color: secondary,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      child: Center(
+                                        child: Text('ADD REVIEW',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 20, top: 10, bottom: 15),
+                        child: Text(
+                          "Reviews from our customers !",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                    ),
+
+                    SliverToBoxAdapter(
+                        child: Container(
+                          padding: EdgeInsets.only(left: 0,right: 20),
+                      width: 150,
+                      height: 150,
+                      child: listOfReviews(context, shop.shop_id),
+                    )),
+
+                    SliverPadding(
+                      padding: EdgeInsets.only(top: 50),
+                    ),
+
+                    SliverToBoxAdapter(
+                        child: Container(
+                      width: 80,
+                      height: 80,
+                      child: Image.asset(
+                        'assets/logo2.png',
+                      ),
+                    )),
+
+                    SliverPadding(
+                      padding: EdgeInsets.only(bottom: 100),
                     ),
                   ],
                 );
               }
-              return Container(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(secondary))
-                  ],
-                ),
-              );
+              return LoadingPage();
             }),
 
         bottomSheet: Visibility(
