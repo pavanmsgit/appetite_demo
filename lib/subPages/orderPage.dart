@@ -3,7 +3,7 @@ import 'package:appetite_demo/helpers/appBarDefault.dart';
 import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/models/dataModels.dart';
 import 'package:appetite_demo/subPages/orderPageComponents/orderSummaryPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +11,9 @@ import 'package:appetite_demo/mainScreens/login.dart';
 import 'package:intl/intl.dart';
 
 class OrderPage extends StatefulWidget {
+  OrderPage({@required this.indexButton});
+  final int indexButton;
+
   @override
   _OrderPageState createState() => _OrderPageState();
 }
@@ -46,7 +49,7 @@ class _OrderPageState extends State<OrderPage> {
     var qs = FirebaseFirestore.instance
         .collection("orders")
         .where('order_by_uid', isEqualTo: uid)
-        .orderBy('order_timestamp')
+        .orderBy('order_timestamp',descending: true)
         .snapshots();
     print('${qs.single}');
     return qs;
@@ -160,6 +163,15 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+
+  getAppBar(size,context){
+    if(widget.indexButton==1){
+      return sliverAppBarDefaultWithBackButtonDown(size,context);
+    }else{
+      return sliverAppBarDefault(size);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -173,17 +185,11 @@ class _OrderPageState extends State<OrderPage> {
               if (snapshot.hasData) {
                 return CustomScrollView(
                   slivers: <Widget>[
-                    sliverAppBarDefault(size),
+                    getAppBar(size, context),
 
                     SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 35, top: 10, bottom: 10),
-                        child: Text(
-                          "Your Orders",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
-                        ),
-                      ),
+                      child: Padding(padding: EdgeInsets.only(top: 10,bottom: 10),
+                        child: Center(child: Text('YOUR ORDERS',style: TextStyle(fontSize: 15,color: Colors.grey,fontWeight: FontWeight.bold),),),),
                     ),
 
                     ///LIST OF ITEMS

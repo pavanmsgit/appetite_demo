@@ -1,21 +1,22 @@
 import 'dart:async';
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/loadingPage.dart';
+import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/models/shopModel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:appetite_demo/models/dataModels.dart';
+import 'package:appetite_demo/subPages/homePageComponents/shopDetailsAndMenu.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:location/location.dart';
 
 class MapsPage extends StatefulWidget {
-  MapsPage({@required this.userCustomModelFromPreviousDataFetch});
+  MapsPage({@required this.userCustomModelFromPreviousDataFetch,@required this.shopCustomModelFromPreviousDataFetch,this.userSelectedModel,this.shopSelectedModel});
   final userCustomModelFromPreviousDataFetch;
+  final shopCustomModelFromPreviousDataFetch;
+  final userSelectedModel;
+  final shopSelectedModel;
 
   @override
   _MapsPageState createState() => _MapsPageState();
@@ -30,13 +31,28 @@ class _MapsPageState extends State<MapsPage> {
   bool isLoading = true;
 
   var userModelCustom;
+  var shopModelCustom;
+  ShopModelCustom shopModelSelected;
+  UserModelCustom userModelSelected;
 
   //INITIALIZE PAGE WITH USER DATA
   @override
   void initState() {
     getUserData();
     userModelCustom = widget.userCustomModelFromPreviousDataFetch;
+    shopModelCustom = widget.shopCustomModelFromPreviousDataFetch;
+
+
+    if(widget.userSelectedModel!=null){
+      userModelSelected = widget.userSelectedModel;
+    }
+
+    if(widget.shopSelectedModel!=null){
+      shopModelSelected = widget.shopSelectedModel;
+    }
+
     getUserLocation();
+
     markers = Set.from([]);
     Location location = new Location();
     location.getLocation().then((res) {
@@ -55,6 +71,7 @@ class _MapsPageState extends State<MapsPage> {
   BitmapDescriptor userCustomMapMarker;
   BitmapDescriptor boyCustomMapMarker;
   BitmapDescriptor girlCustomMapMarker;
+  BitmapDescriptor shopCustomMapMarker;
 
   Set<Marker> markers;
   GoogleMapController _mapController;
@@ -147,9 +164,28 @@ class _MapsPageState extends State<MapsPage> {
     }
   }
 
+  createMarkerShop(context) {
+    if (shopCustomMapMarker == null) {
+      ImageConfiguration configuration = createLocalImageConfiguration(context);
+      BitmapDescriptor.fromAssetImage(configuration, "assets/shopPointer3.png",
+          mipmaps: true)
+          .then((icon) {
+        setState(() {
+          shopCustomMapMarker = icon;
+        });
+      });
+    }
+  }
+
+
   void _onMapCreated(controller) {
     userModelCustom = widget.userCustomModelFromPreviousDataFetch;
+    shopModelCustom = widget.shopCustomModelFromPreviousDataFetch;
     setState(() {
+
+
+
+
       for (UserModelCustom model in userModelCustom) {
         print('THIS IS ON MAP CREATED METHOD ${model.name}');
         print(model.location.latitude);
@@ -160,11 +196,17 @@ class _MapsPageState extends State<MapsPage> {
             position: LatLng(model.location.latitude, model.location.longitude),
             draggable: true,
             alpha: 0.9,
+
             infoWindow: InfoWindow(
+
                 title: '${model.name}, ${model.collegeName}',
                 snippet: 'Phone: ${model.phone}'
             ),
             onTap: () {
+              setState(() {
+                shopModelSelected = null;
+                userModelSelected = model;
+              });
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
@@ -181,10 +223,13 @@ class _MapsPageState extends State<MapsPage> {
             ),
 
             onTap: () {
+              setState(() {
+                shopModelSelected = null;
+                userModelSelected = model;
+              });
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
-
 
         Marker g = Marker(
             markerId: MarkerId('${UniqueKey()}'),
@@ -197,17 +242,13 @@ class _MapsPageState extends State<MapsPage> {
                 snippet: 'Phone: ${model.phone}'
             ),
             onTap: () {
-             /* EasyLoading.showToast(
-                  "Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
-                  maskType: EasyLoadingMaskType.black,
-                  dismissOnTap: true,
-                  toastPosition: EasyLoadingToastPosition.center);*/
-
+              setState(() {
+                shopModelSelected = null;
+                userModelSelected = model;
+              });
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
-
-
 
         Marker b = Marker(
             markerId: MarkerId('${UniqueKey()}'),
@@ -220,6 +261,10 @@ class _MapsPageState extends State<MapsPage> {
                 snippet: 'Phone: ${model.phone}'
             ),
             onTap: () {
+              setState(() {
+                shopModelSelected = null;
+                userModelSelected = model;
+              });
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
@@ -232,7 +277,43 @@ class _MapsPageState extends State<MapsPage> {
         } else {
           markers.add(o);
         }
+
+
+          if(widget.userSelectedModel!=null){
+
+          }
+
       }
+
+      for(ShopModelCustom shopModelCustom in shopModelCustom){
+        print('THIS IS ON MAP CREATED METHOD ${shopModelCustom.name}');
+        print(shopModelCustom.location.latitude);
+
+        Marker shop = Marker(
+            markerId: MarkerId('${UniqueKey()}'),
+            icon: shopCustomMapMarker,
+            position: LatLng(shopModelCustom.location.latitude, shopModelCustom.location.longitude),
+            draggable: true,
+            alpha: 0.9,
+            infoWindow: InfoWindow(
+                title: '${shopModelCustom.name}',
+                snippet: 'Phone: ${shopModelCustom.phone}'
+            ),
+            onTap: () {
+              setState(() {
+                userModelSelected = null;
+                shopModelSelected = shopModelCustom;
+              });
+              print('USER NAME ${shopModelCustom.name}');
+              print('USER NUMBER ${shopModelCustom.phone}');
+            });
+        markers.add(shop);
+      }
+
+
+
+
+
       isLoading = false;
       _mapController = controller;
     });
@@ -246,6 +327,7 @@ class _MapsPageState extends State<MapsPage> {
     createMarkerUser(context);
     createMarkerBoy(context);
     createMarkerGirl(context);
+    createMarkerShop(context);
 
     return LoadingOverlay(
       isLoading: isLoading,
@@ -260,7 +342,7 @@ class _MapsPageState extends State<MapsPage> {
       ),
       child: SafeArea(
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
+          resizeToAvoidBottomInset: true,
           body: NestedScrollView(
             physics: NeverScrollableScrollPhysics(),
             headerSliverBuilder:
@@ -355,13 +437,15 @@ class _MapsPageState extends State<MapsPage> {
               child: loadMaps(),
             ),
           ),
+          extendBody: true,
+          bottomNavigationBar: getBottomInfo(context, size)
         ),
       ),
     );
   }
 
   loadMaps() {
-    if (lat != null) {
+    if (widget.userSelectedModel != null) {
       return GoogleMap(
         myLocationButtonEnabled: true,
         myLocationEnabled: true,
@@ -369,13 +453,208 @@ class _MapsPageState extends State<MapsPage> {
         zoomGesturesEnabled: true,
         onMapCreated: _onMapCreated,
         mapType: MapType.normal,
-        //onTap: addMarkers(usersLocation),
         markers: markers,
-        initialCameraPosition:
-            CameraPosition(target: LatLng(lat, lng), zoom: 10),
+        initialCameraPosition: CameraPosition(target: LatLng(widget.userSelectedModel.location.latitude, widget.userSelectedModel.location.longitude), zoom: 16),
+      );
+    } else if (lat != null) {
+      return GoogleMap(
+        myLocationButtonEnabled: true,
+        myLocationEnabled: true,
+        zoomControlsEnabled: true,
+        zoomGesturesEnabled: true,
+        onMapCreated: _onMapCreated,
+        mapType: MapType.normal,
+        markers: markers,
+        initialCameraPosition: CameraPosition(target: LatLng(lat, lng), zoom: 10),
       );
     } else {
       return LoadingPage();
+    }
+  }
+
+  
+  getBottomInfo(context,size){
+    if(shopModelSelected != null){
+      List<dynamic> list = shopModelSelected.cuisine;
+      print(list.join(" | "));
+      String concatenated = list.join(" | ");
+      return Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(40),
+            bottomRight: Radius.circular(40),
+          ),
+        ),
+        height: 200,
+        width: 50,
+        child: Container(
+          decoration: BoxDecoration(
+              color: tertiary,
+              borderRadius: BorderRadius.all(Radius.circular(40))
+          ),
+
+          padding: const EdgeInsets.all(0.0),
+          margin: EdgeInsets.only(bottom: 105),
+          child: ListTile(
+            tileColor: tertiary,
+            onTap: (){
+             /*  Navigator.of(context)
+                      .push(changeScreenSide(ShopDetailsAndMenu(
+                    data: 'data',
+                    size: size,
+                  )));*/
+            },
+            leading: Container(
+              height: 100,
+              width: 80,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: Image.network(
+                 shopModelSelected.logo,
+                  width: size.width * 0.95,
+                  height: 100,
+                  fit: BoxFit.fill,
+                  //cancelToken: cancellationToken,
+                ),
+              ),
+            ),
+            title: Row(
+              children: [
+                Padding(
+                  padding:
+                  EdgeInsets.only(top: 0.0, bottom: 5.0),
+                  child: Text(
+                    shopModelSelected.name,
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ],
+            ),
+            subtitle: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                //mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: 0.0, right: 0.0, top: 5),
+                    child: Text(
+                      '${shopModelSelected.ratings}',
+                      style: TextStyle(fontSize: 12,color: Colors.white),
+                    ),
+                  ),
+                  Padding(
+                      padding: EdgeInsets.only(
+                          left: 0.0, right: 5.0, top: 5),
+                      child: Icon(
+                        Icons.star,
+                        size: 13,
+                          color: Colors.white
+                      )),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: 0.0, right: 0.0, top: 5),
+                    child: Text(
+                      concatenated,
+                      style: TextStyle(fontSize: 11,color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }else if(userModelSelected !=null){
+      return Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(40),
+            bottomRight: Radius.circular(40),
+          ),
+        ),
+        height: 200,
+        width: 50,
+        child: Container(
+          decoration: BoxDecoration(
+              color: tertiary,
+              borderRadius: BorderRadius.all(Radius.circular(40))
+          ),
+
+          padding: const EdgeInsets.all(0.0),
+          margin: EdgeInsets.only(bottom: 105),
+          child: ListTile(
+            tileColor: tertiary,
+            onTap: (){
+            },
+            leading: Container(
+              height: 100,
+              width: 60,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: Image.network(
+                  userModelSelected.photo,
+                  width: size.width * 0.95,
+                  height: 100,
+                  fit: BoxFit.fill,
+                  //cancelToken: cancellationToken,
+                ),
+              ),
+            ),
+            title: Row(
+              children: [
+                Padding(
+                  padding:
+                  EdgeInsets.only(top: 0.0, bottom: 5.0),
+                  child: Text(
+                   userModelSelected.name,
+                    style: TextStyle(
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ],
+            ),
+            subtitle: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                //mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: 0.0, right: 0.0, top: 5),
+                    child: Text(
+                    '${userModelSelected.phone} ',
+                      style: TextStyle(fontSize: 12,color: Colors.white),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: 0.0, right: 0.0, top: 5),
+                    child: Text(
+                     '|| ${userModelSelected.collegeName} ',
+                      style: TextStyle(fontSize: 11,color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
     }
   }
 }

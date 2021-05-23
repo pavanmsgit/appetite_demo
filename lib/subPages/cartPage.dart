@@ -5,7 +5,7 @@ import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/main.dart';
 import 'package:appetite_demo/mainScreens/homeMain.dart';
-import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/models/dataModels.dart';
 import 'package:appetite_demo/subPages/mapsForChoosingContact.dart';
 import 'package:appetite_demo/subPages/paymentPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -93,7 +93,8 @@ class _CartPageState extends State<CartPage> {
             value.docs[i]['user_phone'],
             value.docs[i]['user_location'],
             value.docs[i]['user_gender'],
-            value.docs[i]['user_college_name']);
+            value.docs[i]['user_college_name'],
+            value.docs[i]['user_logo']);
         list.add(userModelCustom);
         //print('HEY $list');
       }
@@ -316,7 +317,7 @@ class _CartPageState extends State<CartPage> {
                             order.shopItems.item_photo,
                             width: widget.size.width * 0.95,
                             height: 100,
-                            fit: BoxFit.fill,
+                            fit: BoxFit.cover,
                             //cancelToken: cancellationToken,
                           ),
                         ),

@@ -3,7 +3,11 @@ import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/appBarDefault.dart';
 import 'package:appetite_demo/helpers/displaySize.dart';
 import 'package:appetite_demo/helpers/loadingPage.dart';
+import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
+import 'package:appetite_demo/subPages/aboutUs.dart';
+import 'package:appetite_demo/subPages/appetiteNetwork.dart';
+import 'package:appetite_demo/subPages/orderPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +17,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AccountPage extends StatefulWidget {
   _AccountPageState createState() => _AccountPageState();
@@ -604,7 +609,7 @@ class _AccountPageState extends State<AccountPage> {
                     borderRadius: BorderRadius.circular(10),
                     child: IconButton(
                       icon: Icon(
-                        Icons.notifications_none_rounded,
+                        Icons.notifications_outlined,
                         color: tertiary,
                       ),
                       tooltip: 'NOTIFICATIONS',
@@ -621,11 +626,15 @@ class _AccountPageState extends State<AccountPage> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: IconButton(
+                    onPressed: (){
+                      Navigator.of(context)
+                          .push(changeScreenUp(AppetiteNetwork()));
+                    },
                     icon: Icon(
-                      Icons.payment,
+                      Icons.people_alt_outlined,
                       color: tertiary,
                     ),
-                    tooltip: 'PAYMENT',
+                    tooltip: 'FRIENDS',
                   ),
                 ),
               ),
@@ -640,6 +649,10 @@ class _AccountPageState extends State<AccountPage> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: IconButton(
+                    onPressed: (){
+                      Navigator.of(context)
+                          .push(changeScreenUp(OrderPage(indexButton: 1,)));
+                    },
                     icon: Icon(
                       Icons.shopping_bag_outlined,
                       color: tertiary,
@@ -661,6 +674,10 @@ class _AccountPageState extends State<AccountPage> {
         Container(
           height: 50,
           child: ListTile(
+            onTap: (){
+              Navigator.of(context)
+                  .push(changeScreenUp(AboutUs()));
+            },
             title: Padding(
               padding: EdgeInsets.only(left: 20),
               child: Text(
@@ -684,10 +701,13 @@ class _AccountPageState extends State<AccountPage> {
         ),
 
         ListTile(
+          onTap: (){
+            launch("mailto:foodappappetite@gmail.com?subject=Contact Us&body=ID:$uid \n User Name: $name \n Phone Number: $phone \n \n");
+          },
           title: Padding(
             padding: EdgeInsets.only(left: 20),
             child: Text(
-              'Contact us',
+              'Contact Us',
               style: TextStyle(
                   color: Colors.grey,
                   fontSize: 15,
@@ -700,6 +720,9 @@ class _AccountPageState extends State<AccountPage> {
         ),
 
         ListTile(
+          onTap: (){
+            launch("mailto:foodappappetite@gmail.com?subject=User Feedback&body=ID:$uid \n User Name: $name \n Phone Number: $phone \n \n");
+          },
           title: Padding(
             padding: EdgeInsets.only(left: 20),
             child: Text(
@@ -737,45 +760,6 @@ class _AccountPageState extends State<AccountPage> {
             },
           ),
         ),
-
-        /* ///LOGOUT BUTTON
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(
-              onTap: () async {
-                auth.logout(context);
-              },
-              child: Container(
-                width: 120,
-                height: 40,
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [tertiary, tertiary]),
-                    borderRadius: BorderRadius.circular(40.0),
-                    boxShadow: [
-                      BoxShadow(
-                          color: tertiary.withOpacity(.3),
-                          offset: Offset(0.4, 0.4),
-                          blurRadius: 6.0)
-                    ]),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    child: Center(
-                      child: Text('LOGOUT',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400)),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),*/
       ],
     );
   }

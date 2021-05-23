@@ -93,8 +93,8 @@ class AddOverlay extends StatelessWidget {
                     fontSize: 10,
                     fontWeight: FontWeight.bold)),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(primary2),
-              foregroundColor: MaterialStateProperty.all<Color>(primary2),
+              backgroundColor: MaterialStateProperty.all<Color>(primary),
+              foregroundColor: MaterialStateProperty.all<Color>(primary),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),

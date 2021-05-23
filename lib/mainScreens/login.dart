@@ -56,7 +56,7 @@ class _LoginState extends State<Login> {
                     padding: EdgeInsets.all(0),
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
-                            colors: [secondary, primary]),
+                            colors: [secondary, Color(0xFFa95aec)]),
                         borderRadius: BorderRadius.circular(50.0),
                         boxShadow: [
                           BoxShadow(

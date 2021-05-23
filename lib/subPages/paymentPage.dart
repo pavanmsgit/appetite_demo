@@ -5,7 +5,7 @@ import 'package:appetite_demo/helpers/appBarDefault.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/mainScreens/homeMain.dart';
-import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/models/dataModels.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -543,7 +543,7 @@ class _PaymentPageState extends State<PaymentPage> {
                             order.shopItems.item_photo,
                             width: widget.size.width * 0.95,
                             height: 100,
-                            fit: BoxFit.fill,
+                            fit: BoxFit.cover,
                             //cancelToken: cancellationToken,
                           ),
                         ),

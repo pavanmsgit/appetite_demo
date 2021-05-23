@@ -3,7 +3,7 @@ import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/models/dataModels.dart';
 import 'package:appetite_demo/subPages/paymentPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,13 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:location/location.dart';
 
 class MapsForChoosingContact extends StatefulWidget {
-  MapsForChoosingContact({@required this.userCustomModelFromPreviousDataFetch,@required this.orderList,@required this.size
-  ,@required this.finalPrice,@required this.totalItems,@required this.shop});
+  MapsForChoosingContact(
+      {@required this.userCustomModelFromPreviousDataFetch,
+      @required this.orderList,
+      @required this.size,
+      @required this.finalPrice,
+      @required this.totalItems,
+      @required this.shop});
   final userCustomModelFromPreviousDataFetch;
   final List<OrderModel> orderList;
   final Size size;
@@ -64,7 +69,6 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
   BitmapDescriptor boyCustomMapMarker;
   BitmapDescriptor girlCustomMapMarker;
 
-
   UserModelCustom selectedUserDataModel;
 
   Set<Marker> markers;
@@ -108,8 +112,8 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
     if (customMapMarker == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
-          configuration, "assets/othersMapPointer.png",
-          mipmaps: true)
+              configuration, "assets/othersMapPointer.png",
+              mipmaps: true)
           .then((icon) {
         setState(() {
           customMapMarker = icon;
@@ -122,7 +126,7 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
     if (boyCustomMapMarker == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(configuration, "assets/boyMapPointer.png",
-          mipmaps: true)
+              mipmaps: true)
           .then((icon) {
         setState(() {
           boyCustomMapMarker = icon;
@@ -135,8 +139,8 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
     if (girlCustomMapMarker == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(
-          configuration, "assets/girlMapPointer.png",
-          mipmaps: true)
+              configuration, "assets/girlMapPointer.png",
+              mipmaps: true)
           .then((icon) {
         setState(() {
           girlCustomMapMarker = icon;
@@ -149,7 +153,7 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
     if (userCustomMapMarker == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
       BitmapDescriptor.fromAssetImage(configuration, "assets/mapMarker.png",
-          mipmaps: true)
+              mipmaps: true)
           .then((icon) {
         setState(() {
           userCustomMapMarker = icon;
@@ -173,19 +177,18 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
             alpha: 0.9,
             infoWindow: InfoWindow(
                 title: '${model.name}, ${model.collegeName}',
-                snippet: 'Phone: ${model.phone}'
-            ),
+                snippet: 'Phone: ${model.phone}'),
             onTap: () {
               setState(() {
                 selectedUserDataModel = model;
-                print('${selectedUserDataModel.id} ${selectedUserDataModel.phone}');
+                print(
+                    '${selectedUserDataModel.id} ${selectedUserDataModel.phone}');
               });
               EasyLoading.showToast(
                   "SELECTED \n Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
                   maskType: EasyLoadingMaskType.clear,
                   dismissOnTap: true,
                   toastPosition: EasyLoadingToastPosition.center);
-
 
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
@@ -199,13 +202,12 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
             alpha: 0.9,
             infoWindow: InfoWindow(
                 title: '${model.name}, ${model.collegeName}',
-                snippet: 'Phone: ${model.phone}'
-            ),
-
+                snippet: 'Phone: ${model.phone}'),
             onTap: () {
               setState(() {
                 selectedUserDataModel = model;
-                print('${selectedUserDataModel.name} ${selectedUserDataModel.phone}');
+                print(
+                    '${selectedUserDataModel.name} ${selectedUserDataModel.phone}');
               });
               EasyLoading.showToast(
                   "SELECTED \n Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
@@ -215,7 +217,6 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
-
 
         Marker g = Marker(
             markerId: MarkerId('${UniqueKey()}'),
@@ -225,12 +226,12 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
             alpha: 0.9,
             infoWindow: InfoWindow(
                 title: '${model.name}, ${model.collegeName}',
-                snippet: 'Phone: ${model.phone}'
-            ),
+                snippet: 'Phone: ${model.phone}'),
             onTap: () {
               setState(() {
                 selectedUserDataModel = model;
-                print('${selectedUserDataModel.name} ${selectedUserDataModel.phone}');
+                print(
+                    '${selectedUserDataModel.name} ${selectedUserDataModel.phone}');
               });
               EasyLoading.showToast(
                   "SELECTED \n Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
@@ -242,7 +243,6 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
               print('USER NUMBER ${model.phone}');
             });
 
-
         Marker b = Marker(
             markerId: MarkerId('${UniqueKey()}'),
             icon: boyCustomMapMarker,
@@ -251,14 +251,14 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
             alpha: 0.9,
             infoWindow: InfoWindow(
                 title: '${model.name}, ${model.collegeName}',
-                snippet: 'Phone: ${model.phone}'
-            ),
+                snippet: 'Phone: ${model.phone}'),
             onTap: () {
               setState(() {
                 selectedUserDataModel = model;
-                print('${selectedUserDataModel.name} ${selectedUserDataModel.phone}');
+                print(
+                    '${selectedUserDataModel.name} ${selectedUserDataModel.phone}');
               });
-               EasyLoading.showToast(
+              EasyLoading.showToast(
                   "SELECTED \n Name : ${model.name} \n College : ${model.collegeName} \n Phone : ${model.phone}",
                   maskType: EasyLoadingMaskType.clear,
                   dismissOnTap: true,
@@ -267,7 +267,6 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
               print('USER NAME ${model.name}');
               print('USER NUMBER ${model.phone}');
             });
-
 
         if (model.gender == 'BOY') {
           markers.add(b);
@@ -282,76 +281,141 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
     });
   }
 
-
-  setUpBottomSheet(){
-    if(selectedUserDataModel != null){
+  setUpBottomSheet(size) {
+    if (selectedUserDataModel != null) {
       return Padding(
-        padding: EdgeInsets.all(12.0),
-        child: Container(
-          margin: EdgeInsets.only(bottom: 20,left: 10,right: 50),
-          height: 60,
-          width: double.infinity,
-          child: ElevatedButton(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Rs. ',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          '${widget.finalPrice}',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+        padding: const EdgeInsets.all(25.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  color: tertiary,
+                  borderRadius: BorderRadius.all(Radius.circular(40))),
+              padding: const EdgeInsets.symmetric(horizontal: 0),
+              margin: EdgeInsets.only(bottom: 20),
+              child: ListTile(
+                tileColor: tertiary,
+                onTap: () {},
+                leading: Container(
+                  height: 100,
+                  width: 60,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(40),
+                    child: Image.network(
+                      selectedUserDataModel.photo,
+                      width: size.width * 0.95,
+                      height: 100,
+                      fit: BoxFit.fill,
+                      //cancelToken: cancellationToken,
                     ),
-                    Text(
-                      "Proceed to Payment >>",
-                      style:
-                      TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-                    )
+                  ),
+                ),
+                title: Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 0.0, bottom: 5.0),
+                      child: Text(
+                        selectedUserDataModel.name,
+                        style: TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              style: ButtonStyle(
-                elevation: MaterialStateProperty.all(1.0),
-                foregroundColor: MaterialStateProperty.all<Color>(primary),
-                backgroundColor: MaterialStateProperty.all<Color>(tertiary),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(color: tertiary),
+                subtitle: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    //mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 5),
+                        child: Text(
+                          '${selectedUserDataModel.phone} ',
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 5),
+                        child: Text(
+                          '|| ${selectedUserDataModel.collegeName} ',
+                          style: TextStyle(fontSize: 11, color: Colors.white),
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ),
-              onPressed: ()  async{
-
-                Navigator.of(context).push(changeScreenSide(PaymentPage(
-                  userCustomModelFromPreviousDataFetch: selectedUserDataModel,
-                  orderList: widget.orderList,
-                  size: widget.size,
-                  finalPrice: widget.finalPrice,
-                  shop: widget.shop,
-                  totalItems: widget.totalItems,
-                  pickUpMode: 1,
-                )));
+            ),
 
 
-
-              }
-          ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 20),
+              child: Container(
+                margin: EdgeInsets.only(bottom: 20, left: 10, right: 50),
+                height: 60,
+                width: double.infinity,
+                child: ElevatedButton(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Rs. ',
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                '${widget.finalPrice}',
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            "Proceed to Payment >>",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 14),
+                          )
+                        ],
+                      ),
+                    ),
+                    style: ButtonStyle(
+                      elevation: MaterialStateProperty.all(1.0),
+                      foregroundColor: MaterialStateProperty.all<Color>(primary),
+                      backgroundColor: MaterialStateProperty.all<Color>(tertiary),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(color: tertiary),
+                        ),
+                      ),
+                    ),
+                    onPressed: () async {
+                      Navigator.of(context).push(changeScreenSide(PaymentPage(
+                        userCustomModelFromPreviousDataFetch:
+                            selectedUserDataModel,
+                        orderList: widget.orderList,
+                        size: widget.size,
+                        finalPrice: widget.finalPrice,
+                        shop: widget.shop,
+                        totalItems: widget.totalItems,
+                        pickUpMode: 1,
+                      )));
+                    }),
+              ),
+            ),
+          ],
         ),
       );
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -383,7 +447,7 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
               return <Widget>[
                 SliverOverlapAbsorber(
                   handle:
-                  NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                   sliver: SliverAppBar(
                     floating: false,
                     leading: Padding(
@@ -470,7 +534,7 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
               child: loadMaps(),
             ),
           ),
-          bottomNavigationBar: setUpBottomSheet(),
+          bottomNavigationBar: setUpBottomSheet(size),
           extendBody: true,
         ),
       ),
@@ -489,12 +553,10 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
         //onTap: addMarkers(usersLocation),
         markers: markers,
         initialCameraPosition:
-        CameraPosition(target: LatLng(lat, lng), zoom: 10),
+            CameraPosition(target: LatLng(lat, lng), zoom: 10),
       );
     } else {
       return LoadingPage();
     }
   }
 }
-
-

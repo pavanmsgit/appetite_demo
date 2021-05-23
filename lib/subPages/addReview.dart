@@ -16,9 +16,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class AddReview extends StatefulWidget {
-  AddReview({@required this.size, @required this.docId});
+  AddReview({@required this.size, @required this.docId,@required this.ratings});
   final Size size;
   final String docId;
+  final double ratings;
 
   @override
   _AddReviewState createState() => _AddReviewState();
@@ -28,6 +29,8 @@ class _AddReviewState extends State<AddReview> {
   bool isLoading = false;
   int itemType = 0;
   double finalRating = 1.0;
+  double ratingToShop ;
+  double customRating;
 
   TextEditingController controllerHeadline = TextEditingController();
   TextEditingController controllerDescription = TextEditingController();
@@ -104,6 +107,17 @@ class _AddReviewState extends State<AddReview> {
                   rand.nextInt(10000).toString();
 
               print(finalNum);
+
+               setState(() {
+                 customRating = (finalRating+widget.ratings)/2;
+               });
+
+               print(' CHECKING FINAL RATING ${customRating.truncateToDouble()}');
+
+              FirebaseFirestore.instance.collection('shops').
+              doc(widget.docId).
+              update({'shop_overall_rating' : customRating.truncateToDouble()});
+
 
               FirebaseFirestore.instance
                   .collection('shops')

@@ -1,5 +1,5 @@
 import 'package:appetite_demo/helpers/screenNavigation.dart';
-import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/models/dataModels.dart';
 import 'package:appetite_demo/subPages/homePageComponents/shopDetailsAndMenu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +90,7 @@ Widget shopListItem(BuildContext context, data) {
                 Padding(
                   padding: EdgeInsets.only(left: 5.0, right: 0.0, top: 5),
                   child: Text(
-                    '${shop.shop_overall_rating} ',
+                    '${shop.shop_overall_rating.toString()} ',
                     style: TextStyle(fontSize: 10),
                   ),
                 ),
@@ -108,10 +108,6 @@ Widget shopListItem(BuildContext context, data) {
                   ),
                 ),
               ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [],
             ),
             SizedBox(height: 2.0),
           ],

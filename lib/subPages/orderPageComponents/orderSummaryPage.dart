@@ -3,11 +3,13 @@ import 'package:appetite_demo/helpers/appBarDefault.dart';
 import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/models/dataModels.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:appetite_demo/mainScreens/login.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderSummaryPage extends StatefulWidget {
   OrderSummaryPage({@required this.orderId, @required this.dataOrder});
@@ -21,6 +23,9 @@ class OrderSummaryPage extends StatefulWidget {
 class _OrderSummaryPageState extends State<OrderSummaryPage> {
   List<String> data;
   String uid, name, email, photoUrl;
+
+  Future<void> _launched;
+
 
   //INTIALIZE PAGE WITH USER DATA
   @override
@@ -41,6 +46,15 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     email = data[2];
     photoUrl = data[3];
   }
+
+  Future<void> makePhoneCall(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
 
   Stream _getStream() {
     var qs = FirebaseFirestore.instance
@@ -449,7 +463,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                         order.order_shop_logo,
                                         width: size.width * 0.95,
                                         height: 100,
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.cover,
                                         //cancelToken: cancellationToken,
                                       ),
                                     ),
@@ -564,7 +578,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                     orderItems.item_photo,
                                     width: size.width * 0.95,
                                     height: 100,
-                                    fit: BoxFit.fill,
+                                    fit: BoxFit.cover,
                                     //cancelToken: cancellationToken,
                                   ),
                                 ),
@@ -869,6 +883,26 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
               }
               return LoadingPage();
             }),
+
+        extendBody: true,
+        bottomNavigationBar:  Padding(
+          padding: EdgeInsets.only(bottom: 20, left: 10),
+          child: FloatingActionButton(
+            backgroundColor: secondary,
+            onPressed: () {
+              if(order.order_seller_number==null){
+                EasyLoading.showInfo('No Permission to call seller');
+              }else{
+                _launched = makePhoneCall('tel:${order.order_seller_number}');
+              }
+            },
+            child: Icon(
+              Icons.phone,
+              color: tertiary,
+              size: 20,
+            ),
+          ),
+        ),
       ),
     );
   }

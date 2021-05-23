@@ -3,7 +3,7 @@ import 'package:appetite_demo/auth/googleSignIn.dart';
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/models/dataModels.dart';
 import 'package:appetite_demo/subPages/accountPage.dart';
 import 'package:appetite_demo/subPages/homePage.dart';
 import 'package:appetite_demo/subPages/mapsPage.dart';
@@ -29,7 +29,9 @@ class _HomeMainState extends State<HomeMain>
   var lat, lng;
   GeoPoint point;
 
-  List<UserModelCustom> list = [];
+  List<UserModelCustom> listUsersInfo = [];
+
+  List<ShopModelCustom> listShopInfo = [];
 
   //INTIALIZE PAGE WITH USER DATA
   @override
@@ -40,7 +42,25 @@ class _HomeMainState extends State<HomeMain>
     super.initState();
   }
 
-  Future<List<UserModelCustom>> fetchData() async {
+  Future<List<ShopModelCustom>> fetchDataShop() async {
+    await FirebaseFirestore.instance.collection("shops").get().then((value) {
+      for (int i = 0; i < value.docs.length; i++) {
+        ShopModelCustom shopModelCustom = ShopModelCustom(
+            value.docs[i]['shop_id'],
+            value.docs[i]['shop_name'],
+            value.docs[i]['shop_seller_number'],
+            value.docs[i]['shop_location'],
+            value.docs[i]['shop_cuisine'],
+            value.docs[i]['shop_logo'],
+            value.docs[i]['shop_overall_rating']);
+        listShopInfo.add(shopModelCustom);
+        //print('HEY $list');
+      }
+    });
+    return listShopInfo;
+  }
+
+  Future<List<UserModelCustom>> fetchDataUser() async {
     await FirebaseFirestore.instance.collection("users").get().then((value) {
       for (int i = 0; i < value.docs.length; i++) {
         UserModelCustom userModelCustom = UserModelCustom(
@@ -48,17 +68,15 @@ class _HomeMainState extends State<HomeMain>
             value.docs[i]['user_name'],
             value.docs[i]['user_phone'],
             value.docs[i]['user_location'],
-          value.docs[i]['user_gender'],
-        value.docs[i]['user_college_name']);
-        list.add(userModelCustom);
+            value.docs[i]['user_gender'],
+            value.docs[i]['user_college_name'],
+            value.docs[i]['user_logo']);
+        listUsersInfo.add(userModelCustom);
         //print('HEY $list');
       }
     });
-    return list;
+    return listUsersInfo;
   }
-
-
-
 
   //CHECKING USER DATA
   getUserData() async {
@@ -143,16 +161,20 @@ class _HomeMainState extends State<HomeMain>
           color: tertiary,
         ),
         onPressed: () async {
-
-          fetchData().whenComplete(() {
-            print('CHECK LIST $list');
-            Navigator.of(context).push(changeScreenUp(MapsPage(userCustomModelFromPreviousDataFetch: list,)));
+          fetchDataUser().whenComplete(() {
+            print('CHECK LIST $listUsersInfo');
+            fetchDataShop().whenComplete(() {
+              Navigator.of(context).push(changeScreenUp(MapsPage(
+                userCustomModelFromPreviousDataFetch: listUsersInfo,
+                shopCustomModelFromPreviousDataFetch: listShopInfo,
+              )));
+            });
           });
 
 
-          print('Floating Action Button Pressed');
 
-          list.clear();
+          listUsersInfo.clear();
+          listShopInfo.clear();
         },
       ),
 

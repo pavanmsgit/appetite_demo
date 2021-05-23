@@ -209,7 +209,7 @@ class Orders{
   String friend_college;
   Timestamp order_timestamp;
   int order_payment_status;
-
+String order_seller_number;
 
   DocumentReference reference;
 
@@ -233,6 +233,7 @@ class Orders{
     this.friend_college=map['friend_college'];
     this.order_timestamp = map['order_timestamp'];
     this.order_payment_status = map['order_payment_status'];
+    this.order_seller_number = map['order_seller_number'];
   }
 
   Orders.fromSnapshot(DocumentSnapshot snapshot)
@@ -257,7 +258,8 @@ class Orders{
         this.friend_number,
         this.friend_college,
         this.order_timestamp,
-        this.order_payment_status
+        this.order_payment_status,
+        this.order_seller_number
       });
 
 }
@@ -354,8 +356,21 @@ class UserModelCustom{
   GeoPoint location;
   String gender;
   String collegeName;
+String photo;
+
+  UserModelCustom(this.id,this.name,this.phone,this.location,this.gender, this.collegeName,this.photo);
+}
+
+class ShopModelCustom{
+  String id;
+  String name;
+  String phone;
+  GeoPoint location;
+  List<dynamic> cuisine;
+  String logo;
+  double ratings;
 
 
-  UserModelCustom(this.id,this.name,this.phone,this.location,this.gender, this.collegeName);
+  ShopModelCustom(this.id,this.name,this.phone,this.location,this.cuisine, this.logo,this.ratings);
 }
 

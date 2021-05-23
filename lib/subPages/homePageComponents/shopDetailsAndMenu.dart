@@ -1,7 +1,7 @@
 import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/models/dataModels.dart';
 import 'package:appetite_demo/subPages/addReview.dart';
 import 'package:appetite_demo/subPages/cartPage.dart';
 import 'package:appetite_demo/subPages/homePageComponents/cartBottomBadge.dart';
@@ -360,7 +360,7 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
                         child: InkWell(
                           onTap: () async {
                             Navigator.of(context)
-                                .push(changeScreenUp(AddReview(docId: shop.shop_id,)));
+                                .push(changeScreenUp(AddReview(docId: shop.shop_id,ratings: shop.shop_overall_rating.truncateToDouble(),)));
                           },
                           child: Container(
                               width: 100,

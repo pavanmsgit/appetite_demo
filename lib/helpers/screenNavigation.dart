@@ -47,6 +47,7 @@ Route changeScreenSide(widget) {
         var curvedAnimation = CurvedAnimation(
           parent: animation,
           curve: curve,
+
         );
 
         return SlideTransition(

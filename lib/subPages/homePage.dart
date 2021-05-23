@@ -2,7 +2,7 @@ import 'package:appetite_demo/helpers/appBarDefault.dart';
 import 'package:appetite_demo/helpers/loadingPage.dart';
 import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
-import 'package:appetite_demo/models/shopModel.dart';
+import 'package:appetite_demo/models/dataModels.dart';
 import 'package:appetite_demo/subPages/homePageComponents/advestiseBanner.dart';
 import 'package:appetite_demo/subPages/homePageComponents/foodCategories.dart';
 import 'package:appetite_demo/subPages/homePageComponents/listOfShops.dart';
