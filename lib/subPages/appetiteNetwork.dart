@@ -19,8 +19,7 @@ class AppetiteNetwork extends StatefulWidget {
 }
 
 class _AppetiteNetworkState extends State<AppetiteNetwork> {
-  List<String> data;
-  String uid, name, email, photoUrl, phone;
+
 
   //INTIALIZE PAGE WITH USER DATA
   @override
@@ -73,13 +72,17 @@ class _AppetiteNetworkState extends State<AppetiteNetwork> {
             value.docs[i]['user_location'],
             value.docs[i]['user_gender'],
             value.docs[i]['user_college_name'],
-            value.docs[i]['user_logo']);
+            value.docs[i]['user_logo'],value.docs[i]['token'],);
         listUsersInfo.add(userModelCustom);
         //print('HEY $list');
       }
     });
     return listUsersInfo;
   }
+
+  List<String> data;
+  String uid, name, email, photoUrl, phone,token;
+
 
   //CHECKING USER DATA
   getUserData() async {
@@ -93,7 +96,9 @@ class _AppetiteNetworkState extends State<AppetiteNetwork> {
     email = data[2];
     photoUrl = data[3];
     phone = data[4];
+    token = data[5];
   }
+
 
   Future mappingUserData(UserDataModelMain users) async {
     setState(() {
@@ -104,7 +109,8 @@ class _AppetiteNetworkState extends State<AppetiteNetwork> {
           users.user_location,
           users.user_gender,
           users.user_college_name,
-          users.user_logo);
+          users.user_logo,
+          users.token);
       userModelCustomSelected = model;
     });
   }
@@ -356,7 +362,7 @@ class _AppetiteNetworkState extends State<AppetiteNetwork> {
                                                 gradient:
                                                     LinearGradient(colors: [
                                                   tertiary,
-                                                  secondary,
+                                                      tertiary,
                                                 ]),
                                                 borderRadius: BorderRadius.only(
                                                   topLeft: Radius.circular(20),
@@ -370,7 +376,7 @@ class _AppetiteNetworkState extends State<AppetiteNetwork> {
                                                 children: [
                                                   Center(
                                                     child: Text(
-                                                      "Live Location",
+                                                      "Live ",
                                                       style: TextStyle(
                                                           fontSize: 12,
                                                           color: Colors.white,
@@ -398,7 +404,7 @@ class _AppetiteNetworkState extends State<AppetiteNetwork> {
                                             onTap: () async {
                                               if (users.user_phone == null) {
                                                 EasyLoading.showInfo(
-                                                    'No Permission to call seller');
+                                                    'No Permission to call');
                                               } else {
                                                 _launched = makePhoneCall(
                                                     'tel:${users.user_phone}');
@@ -411,8 +417,8 @@ class _AppetiteNetworkState extends State<AppetiteNetwork> {
                                               decoration: BoxDecoration(
                                                 gradient:
                                                     LinearGradient(colors: [
-                                                  secondary,
-                                                  secondary,
+                                                      secondary,
+                                                      secondary,
                                                 ]),
                                                 borderRadius: BorderRadius.only(
                                                   topRight: Radius.circular(20),
@@ -426,7 +432,7 @@ class _AppetiteNetworkState extends State<AppetiteNetwork> {
                                                 children: [
                                                   Center(
                                                     child: Text(
-                                                      "Call ${users.user_name}",
+                                                      "Call ",
                                                       style: TextStyle(
                                                           fontSize: 12,
                                                           color: Colors.white,

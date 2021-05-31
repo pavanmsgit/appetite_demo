@@ -7,6 +7,7 @@ class UserModel {
   static const ACCOUNTSTATUS = "accountStatus";
   static const PROFILEPHOTOURL = "profileUrl";
   static const PHONE = 'phone';
+  static const TOKEN = 'token';
 
   String _name;
   String _authId;
@@ -14,6 +15,7 @@ class UserModel {
   int _accountStatus;
   String _profileUrl;
   String _phone;
+  String _token;
 
 //  getters
   String get name => _name;
@@ -22,6 +24,7 @@ class UserModel {
   int get accountStatus => _accountStatus;
   String get profileUrl => _profileUrl;
   String get phone => _phone;
+  String get token => _token;
 
   UserModel.fromSnapshot(DocumentSnapshot snapshot) {
     _name = snapshot.data()[NAME];
@@ -30,5 +33,6 @@ class UserModel {
     _accountStatus = snapshot.data()[ACCOUNTSTATUS];
     _profileUrl = snapshot.data()[PROFILEPHOTOURL];
     _phone = snapshot.data()[PHONE];
+    _token = snapshot.data()[TOKEN];
   }
 }

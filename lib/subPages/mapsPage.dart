@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
+//import 'package:location/location.dart';
 
 class MapsPage extends StatefulWidget {
   MapsPage({@required this.userCustomModelFromPreviousDataFetch,@required this.shopCustomModelFromPreviousDataFetch,this.userSelectedModel,this.shopSelectedModel});
@@ -24,9 +25,26 @@ class MapsPage extends StatefulWidget {
 
 class _MapsPageState extends State<MapsPage> {
   List<String> data;
-  String uid, name, email, photoUrl, phone;
+  String uid, name, email, photoUrl, phone,token;
 
-  var lat, lng;
+
+  //CHECKING USER DATA
+  getUserData() async {
+    data = await UserData().getUserData();
+    UserData().getUserData().then((result) {
+      setState(() => data = result);
+    });
+    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
+    uid = data[0];
+    name = data[1];
+    email = data[2];
+    photoUrl = data[3];
+    phone = data[4];
+    token = data[5];
+  }
+
+ var lat, lng;
+  //var lat=13.117436463163937, lng=77.6165259629488;
 
   bool isLoading = true;
 
@@ -34,6 +52,9 @@ class _MapsPageState extends State<MapsPage> {
   var shopModelCustom;
   ShopModelCustom shopModelSelected;
   UserModelCustom userModelSelected;
+
+  Position _currentPosition;
+  final Geolocator geoLocator = Geolocator()..forceAndroidLocationManager;
 
   //INITIALIZE PAGE WITH USER DATA
   @override
@@ -51,18 +72,31 @@ class _MapsPageState extends State<MapsPage> {
       shopModelSelected = widget.shopSelectedModel;
     }
 
-    getUserLocation();
+    //getUserLocation();
 
     markers = Set.from([]);
-    Location location = new Location();
+
+    addLocationLive();
+
+   /* Location location = new Location();
     location.getLocation().then((res) {
       setState(() {
         lat = res.latitude;
         lng = res.longitude;
       });
       print('$lat $lng LAT AND LNG CHECK');
-    });
+    });*/
     super.initState();
+  }
+
+  Future addLocationLive() async{
+    geoLocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((position) {
+      setState(() {
+        _currentPosition = position;
+        lat = position.latitude;
+        lng = position.longitude;
+      });
+    });
   }
 
   GoogleMapController mapController;
@@ -76,7 +110,7 @@ class _MapsPageState extends State<MapsPage> {
   Set<Marker> markers;
   GoogleMapController _mapController;
 
-  Future<LatLng> getUserLocation() async {
+  /*Future<LatLng> getUserLocation() async {
     LocationData locationFinal;
     Location location = new Location();
 
@@ -94,21 +128,9 @@ class _MapsPageState extends State<MapsPage> {
       locationFinal = null;
       return null;
     }
-  }
+  }*/
 
-  //CHECKING USER DATA
-  getUserData() async {
-    data = await UserData().getUserData();
-    UserData().getUserData().then((result) {
-      setState(() => data = result);
-    });
-    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
-    uid = data[0];
-    name = data[1];
-    email = data[2];
-    photoUrl = data[3];
-    phone = data[4];
-  }
+
 
   createMarker(context) {
     if (customMapMarker == null) {
@@ -167,7 +189,7 @@ class _MapsPageState extends State<MapsPage> {
   createMarkerShop(context) {
     if (shopCustomMapMarker == null) {
       ImageConfiguration configuration = createLocalImageConfiguration(context);
-      BitmapDescriptor.fromAssetImage(configuration, "assets/shopPointer3.png",
+      BitmapDescriptor.fromAssetImage(configuration, "assets/shopPointer.png",
           mipmaps: true)
           .then((icon) {
         setState(() {
@@ -182,9 +204,6 @@ class _MapsPageState extends State<MapsPage> {
     userModelCustom = widget.userCustomModelFromPreviousDataFetch;
     shopModelCustom = widget.shopCustomModelFromPreviousDataFetch;
     setState(() {
-
-
-
 
       for (UserModelCustom model in userModelCustom) {
         print('THIS IS ON MAP CREATED METHOD ${model.name}');
@@ -454,7 +473,7 @@ class _MapsPageState extends State<MapsPage> {
         onMapCreated: _onMapCreated,
         mapType: MapType.normal,
         markers: markers,
-        initialCameraPosition: CameraPosition(target: LatLng(widget.userSelectedModel.location.latitude, widget.userSelectedModel.location.longitude), zoom: 16),
+        initialCameraPosition: CameraPosition(target: LatLng(widget.userSelectedModel.location.latitude, widget.userSelectedModel.location.longitude), zoom: 10),
       );
     } else if (lat != null) {
       return GoogleMap(
@@ -515,7 +534,7 @@ class _MapsPageState extends State<MapsPage> {
                  shopModelSelected.logo,
                   width: size.width * 0.95,
                   height: 100,
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                   //cancelToken: cancellationToken,
                 ),
               ),
@@ -605,7 +624,7 @@ class _MapsPageState extends State<MapsPage> {
                   userModelSelected.photo,
                   width: size.width * 0.95,
                   height: 100,
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                   //cancelToken: cancellationToken,
                 ),
               ),

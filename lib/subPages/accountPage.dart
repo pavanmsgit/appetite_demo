@@ -7,6 +7,7 @@ import 'package:appetite_demo/helpers/screenNavigation.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:appetite_demo/subPages/aboutUs.dart';
 import 'package:appetite_demo/subPages/appetiteNetwork.dart';
+import 'package:appetite_demo/subPages/notificationPage.dart';
 import 'package:appetite_demo/subPages/orderPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,8 +37,7 @@ class _AccountPageState extends State<AccountPage> {
 
   int gender = 0;
 
-  List<String> data;
-  String uid, name, email, photoUrl, phone;
+
 
   //INTIALIZE PAGE WITH USER DATA
   @override
@@ -45,6 +45,10 @@ class _AccountPageState extends State<AccountPage> {
     getUserData();
     super.initState();
   }
+
+  List<String> data;
+  String uid, name, email, photoUrl, phone,token;
+
 
   //CHECKING USER DATA
   getUserData() async {
@@ -58,7 +62,9 @@ class _AccountPageState extends State<AccountPage> {
     email = data[2];
     photoUrl = data[3];
     phone = data[4];
+    token = data[5];
   }
+
 
   checkGender(gender){
     if(gender == 0){
@@ -608,6 +614,10 @@ class _AccountPageState extends State<AccountPage> {
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: IconButton(
+                      onPressed: (){
+                        Navigator.of(context)
+                            .push(changeScreenUp(NotificationPage()));
+                      },
                       icon: Icon(
                         Icons.notifications_outlined,
                         color: tertiary,
@@ -681,7 +691,7 @@ class _AccountPageState extends State<AccountPage> {
             title: Padding(
               padding: EdgeInsets.only(left: 20),
               child: Text(
-                'About',
+                'About Us',
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 18,
@@ -689,6 +699,7 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
             trailing: IconButton(
+              onPressed: (){},
               icon: Icon(Icons.arrow_forward_ios_rounded),
             ),
           ),
@@ -715,6 +726,7 @@ class _AccountPageState extends State<AccountPage> {
             ),
           ),
           trailing: IconButton(
+            onPressed: (){},
             icon: Icon(Icons.arrow_forward_ios_rounded),
           ),
         ),
@@ -734,6 +746,7 @@ class _AccountPageState extends State<AccountPage> {
             ),
           ),
           trailing: IconButton(
+            onPressed: (){},
             icon: Icon(Icons.arrow_forward_ios_rounded),
           ),
         ),

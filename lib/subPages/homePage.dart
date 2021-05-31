@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -54,7 +55,14 @@ class _HomePageState extends State<HomePage> {
                           if (snapshot.hasData){
                             var list = snapshot.data;
                           return checkIPosterTypeAndReturnLayout(list["poster_list"] ,size);}
-                          else return Container();
+                          else return Center(
+                            child: LoadingBouncingLine.square(
+                              size: 60.0,
+                              backgroundColor: tertiary,
+                              borderColor: tertiary,
+                              duration: Duration(milliseconds: 500),
+                            ),
+                          );
                         },
                       )
                     ),

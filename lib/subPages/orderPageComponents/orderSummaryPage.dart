@@ -73,20 +73,83 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
           Padding(
             padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
             child: Text(
-              'PENDING ',
+              'PENDING',
               style: TextStyle(fontSize: 12),
             ),
           ),
           Padding(
               padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
               child: Icon(
-                Icons.pending,
+                Icons.new_releases_rounded,
                 size: 20,
                 color: secondary,
               )),
         ],
       );
-    } else if (status == 1) {
+    }
+    else if (status == 1) {
+      return Row(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+            child: Text(
+              'ACCEPTED',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
+          Padding(
+              padding:
+              EdgeInsets.only(left: 5.0, right: 0.0, top: 0, bottom: 3),
+              child: Icon(
+                Icons.thumb_up_alt_rounded,
+                size: 20,
+                color: Colors.amber,
+              )),
+        ],
+      );
+    } else if (status == 2) {
+      return Row(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+            child: Text(
+              'COMPLETED ',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
+          Padding(
+              padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+              child: Icon(
+                Icons.check_circle,
+                size: 20,
+                color: Colors.green,
+              )),
+        ],
+      );
+    }else if (status == 3) {
+      return Row(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+            child: Text(
+              'REJECTED ',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
+          Padding(
+              padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+              child: Icon(
+                Icons.cancel,
+                size: 20,
+                color: Colors.red,
+              )),
+        ],
+      );
+    }
+    else if (status == 4) {
       return Row(
         //mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -100,29 +163,9 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
           Padding(
               padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
               child: Icon(
-                Icons.pin_drop,
+                Icons.location_on_rounded,
                 size: 20,
-                color: tertiary,
-              )),
-        ],
-      );
-    } else if (status == 2) {
-      return Row(
-        //mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
-            child: Text(
-              'DELIVERED ',
-              style: TextStyle(fontSize: 12),
-            ),
-          ),
-          Padding(
-              padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
-              child: Icon(
-                Icons.check_circle,
-                size: 20,
-                color: Colors.green,
+                color: secondary,
               )),
         ],
       );
@@ -130,19 +173,27 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
       return Row(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 20.0, right: 0.0, top: 10),
+            padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
             child: Text(
-              'STATUS UNKNOWN',
+              'STATUS UNKNOWN ',
               style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                   color: Colors.grey),
             ),
           ),
+          Padding(
+              padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+              child: Icon(
+                Icons.error,
+                size: 20,
+                color: Colors.red,
+              )),
         ],
       );
     }
   }
+
 
 
   checkPayment(check){
@@ -178,6 +229,38 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
     if(orderPickUpMode==1){
       return  Column(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 40.0, right: 20.0, top: 5),
+                child: Text(
+                  'Order By',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 40.0, right: 20.0, top: 5),
+                child: Text(
+                  order.order_by_name,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: tertiary),
+                ),
+              ),
+            ],
+          ),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -285,6 +368,39 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                 padding: EdgeInsets.only(
                     left: 40.0, right: 20.0, top: 5),
                 child: Text(
+                  'Order By',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 40.0, right: 20.0, top: 5),
+                child: Text(
+                  order.order_by_name,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: tertiary),
+                ),
+              ),
+            ],
+          ),
+
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 40.0, right: 20.0, top: 5),
+                child: Text(
                   'Phone Number',
                   style: TextStyle(
                       fontSize: 14,
@@ -348,9 +464,13 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
 
     var totalPrice = double.parse(order.order_total_price);
 
+    print('TOTAL PRICE FROM DB: ${order.order_total_price}');
 
-    double withoutGst = totalPrice - totalPrice * 0.15;
-    double gst = totalPrice - withoutGst.truncate();
+    double check = totalPrice * 0.18;
+    double withoutGst =  totalPrice;
+    double gst = check;
+    double withGst = withoutGst + gst;
+
 
     int orderDate = order.order_timestamp.millisecondsSinceEpoch;
     final orderDateFormat = DateFormat('dd-MM-yyyy hh:mm a');
@@ -368,64 +488,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
               if (snapshot.hasData) {
                 return CustomScrollView(
                   slivers: <Widget>[
-                    SliverAppBar(
-                      floating: true,
-                      stretch: false,
-                      //leading: Container(),
-                      flexibleSpace: Container(
-                        margin: EdgeInsets.only(bottom: 10),
-                        // It will cover 20% of our total height
-                        height: size.height * 0.6,
-                        child: Stack(
-                          children: <Widget>[
-                            Container(
-                              height: size.height * 0.11,
-                              decoration: BoxDecoration(
-                                color: tertiary,
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(40),
-                                  bottomRight: Radius.circular(40),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 50,
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 0),
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                //height: 90,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(70),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      offset: Offset(0, 10),
-                                      blurRadius: 40,
-                                      color: secondary.withOpacity(0.23),
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: Image.asset(
-                                    "assets/logo2.png",
-                                    width: 100,
-                                    height: 50,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      expandedHeight: 120,
-                      backgroundColor: Colors.transparent,
-                    ),
+                   sliverAppBarDefaultWithBackButton(size, context),
 
                     SliverToBoxAdapter(
                       child: Column(
@@ -650,7 +713,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                               thickness: 0.2,
                               color: tertiary
                           ),
-                        /*  Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Padding(
@@ -668,14 +731,14 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                 padding: EdgeInsets.only(
                                     left: 0.0, right: 40.0, top: 15),
                                 child: Text(
-                                  'Rs. ${withoutGst.truncate()}',
+                                  'Rs. ${withoutGst}',
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400),
                                 ),
                               ),
                             ],
-                          ),*/
+                          ),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -695,7 +758,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                 padding: EdgeInsets.only(
                                     left: 0.0, right: 40.0, top: 15),
                                 child: Text(
-                                  'Rs. ${gst.truncate()}',
+                                  'Rs. ${gst}',
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400),
@@ -725,7 +788,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                                 padding: EdgeInsets.only(
                                     left: 0.0, right: 40.0, top: 5),
                                 child: Text(
-                                  'Rs. ${order.order_total_price}',
+                                  'Rs. ${withGst}',
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400),
@@ -890,10 +953,10 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
           child: FloatingActionButton(
             backgroundColor: secondary,
             onPressed: () {
-              if(order.order_seller_number==null){
-                EasyLoading.showInfo('No Permission to call seller');
+              if(order.friend_number==null){
+                EasyLoading.showInfo('Can not call');
               }else{
-                _launched = makePhoneCall('tel:${order.order_seller_number}');
+                _launched = makePhoneCall('tel:${order.friend_number}');
               }
             },
             child: Icon(

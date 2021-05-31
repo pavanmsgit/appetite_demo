@@ -21,14 +21,8 @@ class AboutUs extends StatefulWidget {
 
 class _AboutUsState extends State<AboutUs> {
   List<String> data;
-  String uid, name, email, photoUrl, phone;
+  String uid, name, email, photoUrl, phone,token;
 
-  //INTIALIZE PAGE WITH USER DATA
-  @override
-  void initState() {
-    getUserData();
-    super.initState();
-  }
 
   //CHECKING USER DATA
   getUserData() async {
@@ -42,7 +36,18 @@ class _AboutUsState extends State<AboutUs> {
     email = data[2];
     photoUrl = data[3];
     phone = data[4];
+    token = data[5];
   }
+
+
+  //INTIALIZE PAGE WITH USER DATA
+  @override
+  void initState() {
+    getUserData();
+    super.initState();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -63,17 +68,8 @@ class _AboutUsState extends State<AboutUs> {
                 return CustomScrollView(
                   slivers: <Widget>[
                     sliverAppBarDefaultWithBackButtonDown(size, context),
-                    SliverPadding(
-                      padding: EdgeInsets.only(top: 10),
-                    ),
-                    SliverToBoxAdapter(
-                        child: Container(
-                      width: 100,
-                      height: 100,
-                      child: Image.asset(
-                        'assets/logo2.png',
-                      ),
-                    )),
+
+
 
 
                     SliverToBoxAdapter(
@@ -85,6 +81,20 @@ class _AboutUsState extends State<AboutUs> {
                         ),
                       ),
                     ),
+
+                    SliverPadding(
+                      padding: EdgeInsets.all(10.0),
+                    ),
+
+                    SliverToBoxAdapter(
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          child: Image.asset(
+                            'assets/logo2.png',
+                          ),
+                        )),
+
                     SliverPadding(
                       padding: EdgeInsets.all(20.0),
                     ),

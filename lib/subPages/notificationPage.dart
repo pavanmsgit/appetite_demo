@@ -8,24 +8,22 @@ import 'package:appetite_demo/subPages/orderPageComponents/orderSummaryPage.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:appetite_demo/mainScreens/login.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class OrderPage extends StatefulWidget {
-  OrderPage({this.indexButton});
+class NotificationPage extends StatefulWidget {
+  NotificationPage({this.indexButton});
   final int indexButton;
 
   @override
-  _OrderPageState createState() => _OrderPageState();
+  _NotificationPageState createState() => _NotificationPageState();
 }
 
-class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMixin {
+class _NotificationPageState extends State<NotificationPage> with SingleTickerProviderStateMixin {
 
   TabController _tabController;
 
-  final List<String> _tabs = ['YOUR ORDERS', 'FRIEND ORDERS',];
+  final List<String> _tabs = ["TODAY'S", 'ALL NOTIFICATIONS',];
 
   //INTIALIZE PAGE WITH USER DATA
   @override
@@ -41,17 +39,6 @@ class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMix
   void dispose() {
     _tabController?.dispose();
     super.dispose();
-  }
-
-  Future<void> _launched;
-
-
-  Future<void> makePhoneCall(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 
 
@@ -71,36 +58,8 @@ class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMix
   }
 
 
-  Stream _getStream() {
-    if(_tabController.index == 1){
-      var qs = FirebaseFirestore.instance
-          .collection("orders")
-          .where('friend_uid', isEqualTo: uid)
-         // .orderBy('order_timestamp',descending: true)
-          .snapshots();
-      print('${qs.single}');
-      return qs;
-    }else {
-      var qs = FirebaseFirestore.instance
-          .collection("orders")
-          .where('order_by_uid', isEqualTo: uid)
-          .orderBy('order_timestamp',descending: true)
-          .snapshots();
-      print('${qs.single}');
-      return qs;
-    }
-  }
 
 
-  getBackButton(){
-    if(widget.indexButton == 1){
-      return Container(
-        child: IconButton(icon: Icon(Icons.keyboard_arrow_down_outlined,color: Colors.white,size: 30,),onPressed: () {
-          Navigator.pop(context);
-        },),
-      );
-    }
-  }
 
 
 
@@ -122,7 +81,11 @@ class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMix
                   floating: true,
                   stretch: true,
                   toolbarHeight: 50,
-                  leading: getBackButton(),
+                  leading: Container(
+                    child: IconButton(icon: Icon(Icons.keyboard_arrow_down_outlined,color: Colors.white,size: 30,),onPressed: () {
+                      Navigator.pop(context);
+                    },),
+                  ),
                   flexibleSpace: FlexibleSpaceBar(
                     background: Container(
                       margin: EdgeInsets.only(bottom: 50),
@@ -214,10 +177,10 @@ class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMix
                                   },
                                   tabs: [
                                     Tab(
-                                      text: 'MY ORDERS',
+                                      text: "TODAY'S",
                                     ),
                                     Tab(
-                                      text: 'FRIEND ORDERS',
+                                      text: "ALL NOTIFICATIONS",
                                     ),
                                   ],
                                 ),
@@ -248,11 +211,15 @@ class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMix
 
 
   Widget _buildTabContent(tab, size) {
-    if(tab == 'YOUR ORDERS'){
+    if(tab == "TODAY'S"){
+      DateTime today = DateTime.now();
+      DateTime aDayAgo = today.subtract(const Duration(days: 1));
+
       return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
-              .collection("orders")
+              .collection("notifications")
               .where('order_by_uid', isEqualTo: uid)
+              .where('order_timestamp' ,isGreaterThan: aDayAgo)
               .orderBy('order_timestamp',descending: true)
               .snapshots(),
           builder: (context, snapshot) {
@@ -269,7 +236,7 @@ class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMix
                     delegate: SliverChildBuilderDelegate(
                           (BuildContext context, int index) {
                         DocumentSnapshot data = snapshot.data.docs[index];
-                        return orderItemList(context, data, size);
+                        return notificationItemList(context, data, size);
                       },
                       childCount: snapshot.data.docs.length,
                     ),
@@ -305,63 +272,63 @@ class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMix
           });
     }
     else
-      if(tab == 'FRIEND ORDERS'){
-        return StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("orders")
-                .where('friend_uid', isEqualTo: uid)
-                .orderBy('order_timestamp',descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return CustomScrollView(
-                  slivers: <Widget>[
+    if(tab == "ALL NOTIFICATIONS"){
+      return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection("notifications")
+              .where('order_by_uid', isEqualTo: uid)
+              .orderBy('order_timestamp',descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return CustomScrollView(
+                slivers: <Widget>[
 
 
-                    SliverPadding(
-                      padding: EdgeInsets.only(top: 30),
+                  SliverPadding(
+                    padding: EdgeInsets.only(top: 30),
+                  ),
+
+                  ///LIST OF ITEMS
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                        DocumentSnapshot data = snapshot.data.docs[index];
+                        return notificationItemList(context, data, size);
+                      },
+                      childCount: snapshot.data.docs.length,
                     ),
+                  ),
 
-                    ///LIST OF ITEMS
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                            (BuildContext context, int index) {
-                          DocumentSnapshot data = snapshot.data.docs[index];
-                          return orderItemList(context, data, size);
-                        },
-                        childCount: snapshot.data.docs.length,
-                      ),
-                    ),
+                  SliverPadding(
+                    padding: EdgeInsets.only(top: 30),
+                  ),
 
-                    SliverPadding(
-                      padding: EdgeInsets.only(top: 30),
-                    ),
+                  SliverToBoxAdapter(
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        child: Image.asset(
+                          'assets/logo2.png',
+                        ),
+                      )),
 
-                    SliverToBoxAdapter(
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          child: Image.asset(
-                            'assets/logo2.png',
-                          ),
-                        )),
-
-                    SliverPadding(
-                      padding: EdgeInsets.only(bottom: 60),
-                    ),
-                  ],
-                );
-              }
-              return Center(
-                child: LoadingBouncingLine.square(
-                  size: 60.0,
-                  backgroundColor: tertiary,
-                  borderColor: tertiary,
-                  duration: Duration(milliseconds: 500),
-                ),
+                  SliverPadding(
+                    padding: EdgeInsets.only(bottom: 60),
+                  ),
+                ],
               );
-            });
-      }
+            }
+            return Center(
+              child: LoadingBouncingLine.square(
+                size: 60.0,
+                backgroundColor: tertiary,
+                borderColor: tertiary,
+                duration: Duration(milliseconds: 500),
+              ),
+            );
+          });
+    }
   }
 
   getOrderStatus(status) {
@@ -504,41 +471,29 @@ class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMix
 
 
 
-  getCallFriendButton(order){
-    if(order.friend_number != null){
-      return IconButton(icon:Icon(Icons.phone,color:tertiary),onPressed: (){
-        if(order.friend_number==null){
-          EasyLoading.showInfo('Can not call');
-        }else{
-          _launched = makePhoneCall('tel:${order.friend_number}');
-        }
-      },);
-    }
-  }
+  Widget notificationItemList(context, data, size) {
+    final notification = Notifications.fromSnapshot(data);
 
-  Widget orderItemList(context, data, size) {
-    final order = Orders.fromSnapshot(data);
-
-    int orderDate = order.order_timestamp.millisecondsSinceEpoch;
+    int orderDate = notification.order_timestamp.millisecondsSinceEpoch;
     final orderDateFormat = DateFormat('dd-MM-yyyy hh:mm a');
     String finalOrderDate =
-        orderDateFormat.format(DateTime.fromMillisecondsSinceEpoch(orderDate));
+    orderDateFormat.format(DateTime.fromMillisecondsSinceEpoch(orderDate));
 
     return GestureDetector(
       onTap: () async {
         Navigator.of(context).push(
           changeScreenSide(
-            OrderSummaryPage(orderId: order.order_id, dataOrder: data),
+            OrderSummaryPage(orderId: notification.order_id, dataOrder: data),
           ),
         );
       },
       child: Container(
-        height: 280,
-        margin: EdgeInsets.only(left: 20, right: 20),
+        //height: 110,
+        margin: EdgeInsets.only(left: 5, right: 5),
         child: Card(
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            elevation: 3.0,
+                borderRadius: BorderRadius.circular(10.0)),
+            elevation: 2.0,
             child: Column(
               children: [
                 ListTile(
@@ -547,205 +502,85 @@ class _OrderPageState extends State<OrderPage> with SingleTickerProviderStateMix
                     width: 80,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        order.order_shop_logo,
-                        width: size.width * 0.95,
-                        height: 100,
-                        fit: BoxFit.cover,
-                        //cancelToken: cancellationToken,
-                      ),
+                      child: Icon(Icons.notifications_rounded,color: tertiary,size: 50,),
                     ),
                   ),
-                  title: Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 0.0, bottom: 5.0),
-                        child: Text(
-                          order.order_shop_name,
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.w600,
+                  title: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+                          child: Text(
+                            notification.title,
+                            style: TextStyle(
+                              fontSize: 13.0,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          textAlign: TextAlign.start,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  subtitle: Row(
-                    //mainAxisAlignment: MainAxisAlignment.center,
+                  subtitle: Column(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: 5.0, right: 0.0, top: 5),
+                        padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 3),
                         child: Text(
-                          '${order.order_shop_overall_rating} ',
+                          '${notification.description} ',
                           style: TextStyle(fontSize: 13),
                         ),
                       ),
-                      Padding(
-                          padding:
-                              EdgeInsets.only(left: 0.0, right: 5.0, top: 5),
-                          child: Icon(
-                            Icons.star,
-                            size: 14,
-                          )),
                     ],
                   ),
-                  trailing: getCallFriendButton(order)
                 ),
-                Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding:
-                          EdgeInsets.only(left: 20.0, right: 0.0, top: 5),
-                          child: Text(
-                            'OTP:',
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey),
-                          ),
-                        ),
-                        Padding(
-                          padding:
-                          EdgeInsets.only(left: 2.0, right: 0.0, top: 5),
-                          child: Text(
-                            '${order.order_otp} ',
-                            style: TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ],
+                    Padding(
+                      padding:
+                      EdgeInsets.only(left: 0.0, right: 0.0, top: 5,bottom: 5),
+                      child: Text(
+                        'OTP:',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey),
+                      ),
                     ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding:
-                              EdgeInsets.only(left: 20.0, right: 0.0, top: 5),
-                          child: Text(
-                            'ITEMS',
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey),
-                          ),
-                        ),
-                      ],
+                    Padding(
+                      padding:
+                      EdgeInsets.only(left: 2.0, right: 0.0, top: 5,bottom: 5),
+                      child: Text(
+                        '${notification.order_otp} ',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w400),
+                      ),
                     ),
-                    Row(
-                      children: [
-                        Padding(
-                          padding:
-                              EdgeInsets.only(left: 20.0, right: 0.0, top: 5),
-                          child: Text(
-                            '${order.order_total_quantity} ',
-                            style: TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                        Padding(
-                          padding:
-                              EdgeInsets.only(left: 0.0, right: 0.0, top: 5),
-                          child: Text(
-                            'x Number Of Items ',
-                            style: TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ],
+
+
+                    Padding(
+                      padding:
+                      EdgeInsets.only(left: 20.0, right: 0.0, top: 5,bottom: 5),
+                      child: Text(
+                        'DATE:',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey),
+                      ),
                     ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding:
-                              EdgeInsets.only(left: 20.0, right: 0.0, top: 5),
-                          child: Text(
-                            'ORDERED ON',
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey),
-                          ),
-                        ),
-                      ],
+                    Padding(
+                      padding:
+                      EdgeInsets.only(left: 2.0, right: 0.0, top: 5,bottom: 5),
+                      child: Text(
+                        '$finalOrderDate',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w400),
+                      ),
                     ),
-                    Row(
-                      children: [
-                        Padding(
-                          padding:
-                              EdgeInsets.only(left: 20.0, right: 0.0, top: 5),
-                          child: Text(
-                            finalOrderDate,
-                            style: TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding:
-                              EdgeInsets.only(left: 20.0, right: 0.0, top: 5),
-                          child: Text(
-                            'TOTAL AMOUNT',
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Padding(
-                          padding:
-                              EdgeInsets.only(left: 20.0, right: 0.0, top: 5),
-                          child: Text(
-                            order.order_total_price,
-                            style: TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding:
-                              EdgeInsets.only(left: 20.0, right: 0.0, top: 10),
-                          child: Text(
-                            'ORDER STATUS : ',
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey),
-                          ),
-                        ),
-                        Padding(
-                            padding:
-                                EdgeInsets.only(left: 0.0, right: 0.0, top: 10),
-                            child: getOrderStatus(order.order_status)),
-                      ],
-                    ),
+
                   ],
                 ),
               ],

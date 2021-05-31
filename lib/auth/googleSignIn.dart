@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:appetite_demo/auth/userData.dart';
 import 'package:appetite_demo/auth/userModel.dart';
 import 'package:appetite_demo/helpers/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -81,6 +85,8 @@ class AuthProvider with ChangeNotifier {
       print(user.email);
       print(user.uid);
       print(user.displayName);
+
+
       //ADDING DATA TO SHARED PREFERENCES
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('authId', user.uid);
@@ -110,6 +116,8 @@ class AuthProvider with ChangeNotifier {
 
 
 
+
+
   void signOutGoogle() async {
     print('yes signed out');
     _status = Status.Unauthenticated;
@@ -126,21 +134,21 @@ class AuthProvider with ChangeNotifier {
           style: TextStyle(color: Colors.white),
         ),
         actions: <Widget>[
-          ElevatedButton(
+          FlatButton(
             child: Text(
               "No",
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () => Navigator.pop(context, false),
           ),
-          ElevatedButton(
+          FlatButton(
             child: Text(
               "Yes",
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () async {
               final SharedPreferences prefs =
-                  await SharedPreferences.getInstance();
+              await SharedPreferences.getInstance();
               prefs.setBool('loggedIn', false);
               await UserData().logoutUserFromDevice();
               signOutGoogle();

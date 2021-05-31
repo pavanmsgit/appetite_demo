@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:appetite_demo/auth/userData.dart';
@@ -37,7 +38,24 @@ class _PaymentPageState extends State<PaymentPage> {
   bool isLoading = false;
 
   List<String> data;
-  String uid, name, email, photoUrl, phone;
+  String uid, name, email, photoUrl, phone,token;
+
+
+  //CHECKING USER DATA
+  getUserData() async {
+    data = await UserData().getUserData();
+    UserData().getUserData().then((result) {
+      setState(() => data = result);
+    });
+    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
+    uid = data[0];
+    name = data[1];
+    email = data[2];
+    photoUrl = data[3];
+    phone = data[4];
+    token = data[5];
+  }
+
 
   Razorpay _razorpay;
   var options;
@@ -46,6 +64,7 @@ class _PaymentPageState extends State<PaymentPage> {
   var rand = new Random();
 
   String finalOrderId ;
+  String otp;
 
   int paymentMode = 0;
 
@@ -75,7 +94,17 @@ class _PaymentPageState extends State<PaymentPage> {
         rand.nextInt(10000).toString() +
         rand.nextInt(1000000).toString();
 
-   double checkPrice = double.parse(widget.finalPrice) * 100;
+
+
+
+
+   var priceItems = double.parse('${widget.finalPrice}').truncateToDouble();
+
+
+   double gst =  priceItems * 0.18;
+   double totalPrice = priceItems + gst;
+
+   double checkPrice = totalPrice * 100;
    print(checkPrice);
 
     setState(() {
@@ -99,21 +128,40 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async{
-    finalOrderId = rand.nextInt(100000).toString() +
+    var rand = new Random();
+
+    String orderId = rand.nextInt(100000).toString() +
         rand.nextInt(10000).toString() +
         rand.nextInt(1000000).toString();
 
+    String notificationId = rand.nextInt(10000000).toString() +
+        rand.nextInt(1000000).toString() +
+        rand.nextInt(1000000).toString();
+
+    otp = rand.nextInt(10000).toString();
+
+    var priceItems = double.parse('${widget.finalPrice}').truncateToDouble();
+
+
+    double gst =  priceItems * 0.18;
+    double totalPrice = priceItems + gst;
+
+
+    ///PICK UP MODE 0 IS SELF PICKUP
     if(widget.pickUpMode==0){
+      ///ADDING ORDER DATA
       FirebaseFirestore.instance.collection('orders').add({
-        'order_id' : finalOrderId,
+        'order_id' : orderId,
         'order_shop_id' : widget.shop.shop_id,
         'order_shop_name' : widget.shop.shop_name,
         'order_shop_logo' : widget.shop.shop_logo,
         'order_shop_overall_rating' : widget.shop.shop_overall_rating,
         'order_shop_location' : widget.shop.shop_location,
+        'order_shop_token' : widget.shop.token,
         'order_by_name' : name,
         'order_by_uid' : uid,
         'order_by_phone' : phone,
+        'order_by_token' : token,
         'order_total_price' : widget.finalPrice,
         'order_total_quantity' : widget.totalItems,
         'order_payment_mode' : 1,
@@ -121,35 +169,79 @@ class _PaymentPageState extends State<PaymentPage> {
         'order_pickup_mode' : widget.pickUpMode,
         'order_status' : 0,
         'order_timestamp' : DateTime.now(),
-        'order_payment_status': 1
+        'order_payment_status': 1,
+        'order_otp': otp
       });
+
+      ///ADDING ORDER ITEMS
       for (var orderItems in widget.orderList) {
         FirebaseFirestore.instance.collection('order_items').add({
-          'order_id': finalOrderId,
+          'order_id': orderId,
           'item_quantity': orderItems.quantity,
           'item_name': orderItems.shopItems.item_name,
           'item_price': orderItems.shopItems.item_price,
           'item_photo': orderItems.shopItems.item_photo,
           'item_type': orderItems.shopItems.item_type,
         });
+
+        ///ADDING NOTIFICATION DATA
+        ///
+        ///NOTIFICATION FOR SELLER
+        FirebaseFirestore.instance.collection('notifications').add({
+          'notification_id' : notificationId,
+          'title' : 'New Order $orderId.',
+          'description' : '$name has ordered ${widget.totalItems} for Rs.${widget.finalPrice}. Order will be picked by $name himself. Payment is completed.',
+          'createdAt' : DateTime.now(),
+          'platform': Platform.operatingSystem,
+          'token': widget.shop.token,
+          'order_id' : orderId,
+          'order_shop_id' : widget.shop.shop_id,
+          'order_shop_name' : widget.shop.shop_name,
+          'order_shop_logo' : widget.shop.shop_logo,
+          'order_shop_overall_rating' : widget.shop.shop_overall_rating,
+          'order_shop_location' : widget.shop.shop_location,
+          'order_shop_token' : widget.shop.token,
+          'order_by_name' : name,
+          'order_by_uid' : uid,
+          'order_by_phone' : phone,
+          'order_by_token' : token,
+          'order_total_price' : totalPrice.toString(),
+          'order_total_quantity' : widget.totalItems,
+          'order_payment_mode' : 1,
+          'order_payment_id' : response.paymentId,
+          'order_pickup_mode' : widget.pickUpMode,
+          'order_status' : 0,
+          'order_timestamp' : DateTime.now(),
+          'order_payment_status': 1,
+          'order_otp': otp
+        });
+
       }
       EasyLoading.showSuccess('Payment Successful.\nThank you for placing your order !');
       changeScreenReplacement(context, HomeMain());
-    }else
+    }
+
+    else
+
+      ///FRIEND PICKUP
       if(widget.pickUpMode==1){
       FirebaseFirestore.instance.collection('orders').add({
-        'order_id' : finalOrderId,
+        'order_id' : orderId,
         'order_shop_id' : widget.shop.shop_id,
         'order_shop_name' : widget.shop.shop_name,
         'order_shop_logo' : widget.shop.shop_logo,
         'order_shop_overall_rating' : widget.shop.shop_overall_rating,
         'order_shop_location' : widget.shop.shop_location,
+       'order_shop_token': widget.shop.token,
         'order_by_name' : name,
         'order_by_uid' : uid,
         'order_by_phone' : phone,
+        'order_by_token' : token,
+        'friend_uid': widget.userCustomModelFromPreviousDataFetch.id,
         'friend_name': widget.userCustomModelFromPreviousDataFetch.name,
         'friend_number':widget.userCustomModelFromPreviousDataFetch.phone,
         'friend_college':widget.userCustomModelFromPreviousDataFetch.collegeName,
+        'friend_token' : widget.userCustomModelFromPreviousDataFetch.token,
         'order_total_price' : widget.finalPrice,
         'order_total_quantity' : widget.totalItems,
         'order_payment_mode' : 1,
@@ -157,11 +249,12 @@ class _PaymentPageState extends State<PaymentPage> {
         'order_pickup_mode' : widget.pickUpMode,
         'order_status' : 0,
         'order_timestamp' : DateTime.now(),
-        'order_payment_status': 1
+        'order_payment_status': 1,
+        'order_otp': otp
       });
       for (var orderItems in widget.orderList) {
         FirebaseFirestore.instance.collection('order_items').add({
-          'order_id': finalOrderId,
+          'order_id': orderId,
           'item_quantity': orderItems.quantity,
           'item_name': orderItems.shopItems.item_name,
           'item_price': orderItems.shopItems.item_price,
@@ -169,6 +262,82 @@ class _PaymentPageState extends State<PaymentPage> {
           'item_type': orderItems.shopItems.item_type,
         });
       }
+
+
+      ///ADDING NOTIFICATION DATA
+      ///
+      ///NOTIFICATION FOR SELLER
+      FirebaseFirestore.instance.collection('notifications').add({
+        'notification_id' : notificationId,
+        'title' : 'New Order $orderId.',
+        'description' : "$name has ordered ${widget.totalItems} for Rs.${widget.finalPrice}. Order will be picked by $name's Friend ${widget.userCustomModelFromPreviousDataFetch.name}.",
+        'createdAt' : DateTime.now(),
+        'platform': Platform.operatingSystem,
+        'token': widget.shop.token,
+        'order_id' : orderId,
+        'order_shop_id' : widget.shop.shop_id,
+        'order_shop_name' : widget.shop.shop_name,
+        'order_shop_logo' : widget.shop.shop_logo,
+        'order_shop_overall_rating' : widget.shop.shop_overall_rating,
+        'order_shop_location' : widget.shop.shop_location,
+        'order_shop_token': widget.shop.token,
+        'order_by_name' : name,
+        'order_by_uid' : uid,
+        'order_by_phone' : phone,
+        'order_by_token' : token,
+        'friend_uid': widget.userCustomModelFromPreviousDataFetch.id,
+        'friend_name': widget.userCustomModelFromPreviousDataFetch.name,
+        'friend_number':widget.userCustomModelFromPreviousDataFetch.phone,
+        'friend_college':widget.userCustomModelFromPreviousDataFetch.collegeName,
+        'friend_token' : widget.userCustomModelFromPreviousDataFetch.token,
+        'order_total_price' : totalPrice.toString(),
+        'order_total_quantity' : widget.totalItems,
+        'order_payment_mode' : 1,
+        'order_payment_id' : response.paymentId,
+        'order_pickup_mode' : widget.pickUpMode,
+        'order_status' : 0,
+        'order_timestamp' : DateTime.now(),
+        'order_payment_status': 1,
+        'order_otp': otp
+      });
+
+
+      ///NOTIFICATION TO FRIEND
+      FirebaseFirestore.instance.collection('notifications').add({
+        'notification_id' : notificationId,
+        'title' : 'Pick-Up request from $name.',
+        'description' : '$name has requested to pick a order for them from ${widget.shop.shop_name} for Rs.${widget.finalPrice}.',
+        'createdAt' : DateTime.now(),
+        'platform': Platform.operatingSystem,
+        'token': widget.userCustomModelFromPreviousDataFetch.token,
+        'order_id' : orderId,
+        'order_shop_id' : widget.shop.shop_id,
+        'order_shop_name' : widget.shop.shop_name,
+        'order_shop_logo' : widget.shop.shop_logo,
+        'order_shop_overall_rating' : widget.shop.shop_overall_rating,
+        'order_shop_location' : widget.shop.shop_location,
+        'order_shop_token': widget.shop.token,
+        'order_by_name' : name,
+        'order_by_uid' : uid,
+        'order_by_phone' : phone,
+        'order_by_token' : token,
+        'friend_uid': widget.userCustomModelFromPreviousDataFetch.id,
+        'friend_name': widget.userCustomModelFromPreviousDataFetch.name,
+        'friend_number':widget.userCustomModelFromPreviousDataFetch.phone,
+        'friend_college':widget.userCustomModelFromPreviousDataFetch.collegeName,
+        'friend_token' : widget.userCustomModelFromPreviousDataFetch.token,
+        'order_total_price' : totalPrice.toString(),
+        'order_total_quantity' : widget.totalItems,
+        'order_payment_mode' : 1,
+        'order_payment_id' : response.paymentId,
+        'order_pickup_mode' : widget.pickUpMode,
+        'order_status' : 0,
+        'order_timestamp' : DateTime.now(),
+        'order_payment_status': 1,
+        'order_otp': otp
+      });
+
+
       EasyLoading.showSuccess('Payment Successful.\nThank you for placing your order !');
       changeScreenReplacement(context, HomeMain());
     }
@@ -184,19 +353,7 @@ class _PaymentPageState extends State<PaymentPage> {
     EasyLoading.showInfo('Wallet Name : ${response.walletName}');
   }
 
-  //CHECKING USER DATA
-  getUserData() async {
-    data = await UserData().getUserData();
-    UserData().getUserData().then((result) {
-      setState(() => data = result);
-    });
-    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]} ${data[1]} ${data[2]} ${data[3]} ${data[4]}');
-    uid = data[0];
-    name = data[1];
-    email = data[2];
-    photoUrl = data[3];
-    phone = data[4];
-  }
+
 
   checkVegOrNonVeg(type) {
     if (type == 0) {
@@ -358,8 +515,6 @@ class _PaymentPageState extends State<PaymentPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
-
                 Center(
                     child: Padding(
                       padding: EdgeInsets.only(left: 0,top: 10),
@@ -391,8 +546,6 @@ class _PaymentPageState extends State<PaymentPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
-
                 Center(
                     child: Padding(
                       padding: EdgeInsets.only(left: 0,top: 10),
@@ -422,76 +575,19 @@ class _PaymentPageState extends State<PaymentPage> {
 
         ],
       );
-
-
-
-      /*return Column(
-        children: [
-
-          ElevatedButton(
-            onPressed: () async {
-
-            if (await FlutterContacts.requestPermission()) {
-
-              var contact = await _contactPicker.selectContact();
-              setState(() {
-
-               // _contact = contact;
-              });
-
-              print(contact.fullName);
-
-            }
-
-
-          },
-          child: Text('PICK CONTACTS'),
-          ),
-
-          *//*Padding(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-            child: TextField(
-              controller: controllerName,
-              keyboardType: TextInputType.name,
-              cursorColor: Colors.black,
-              autofocus: false,
-              maxLength: 15,
-              decoration: InputDecoration(
-                hintText: "Your Friend's Name",
-                hintStyle: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w100,
-                    color: Colors.grey),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 50),
-            child: TextField(
-              controller: controllerNumber,
-              keyboardType: TextInputType.number,
-              cursorColor: Colors.black,
-              autofocus: false,
-              maxLines: 1,
-              maxLength: 10,
-              decoration: InputDecoration(
-                hintMaxLines: 4,
-                hintText: "Enter your friend's number : 98XXX XXXXX",
-                hintStyle: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w100,
-                    color: Colors.grey),
-              ),
-            ),
-          ),*//*
-        ],
-      );*/
     }
   }
 
 
   @override
   Widget build(BuildContext context) {
+
+    var priceItems = double.parse('${widget.finalPrice}').truncateToDouble();
+
+
+    double gst =  priceItems * 0.18;
+    var totalPrice = priceItems + gst;
+
     return LoadingOverlay(
       color: tertiary,
       progressIndicator: LoadingBumpingLine.square(
@@ -526,6 +622,33 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                   ),
                 ),
+              ),
+
+
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                  child: ToggleSwitch(
+                      minWidth: widget.size.width * 0.7,
+                      inactiveBgColor: Colors.white,
+                      activeBgColor: Colors.black,
+                      initialLabelIndex: paymentMode,
+                      fontSize: 11,
+                      cornerRadius: 20.0,
+                      labels: ['PAY ON PICK-UP', 'UPI / DEBIT CARD'],
+                      onToggle: (index) => setState(() => paymentMode = index)),
+                ),
+              ),
+
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                  child: checkPickUpType(widget.pickUpMode),
+                ),
+              ),
+
+              SliverPadding(
+                padding: EdgeInsets.all(10.0),
               ),
 
               ///LIST OF CART ITEMS
@@ -604,31 +727,104 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
               ),
 
-               SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 30, left: 10, right: 10),
-                  child: ToggleSwitch(
-                      minWidth: widget.size.width * 0.7,
-                      inactiveBgColor: Colors.white,
-                      activeBgColor: Colors.black,
-                      initialLabelIndex: paymentMode,
-                      fontSize: 11,
-                      cornerRadius: 20.0,
-                      labels: ['PAY ON PICK-UP', 'UPI / DEBIT CARD'],
-                      onToggle: (index) => setState(() => paymentMode = index)),
-                ),
-              ),
-
-
-
+              ///ITEM TOTAL
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  child: checkPickUpType(widget.pickUpMode),
+                child: Column(
+                  children: [
+                    Divider(
+                        thickness: 0.2,
+                        color: tertiary
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 40.0, right: 20.0, top: 15),
+                          child: Text(
+                            'ITEM TOTAL',
+                            style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 0.0, right: 40.0, top: 15),
+                          child: Text(
+                            'Rs. ${priceItems}',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 40.0, right: 20.0, top: 10),
+                          child: Text(
+                            'GST & Other Taxes',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 0.0, right: 40.0, top: 15),
+                          child: Text(
+                            'Rs. ${gst}',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(
+                        thickness: 0.2,
+                        color: tertiary
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 40.0, right: 20.0, top: 5),
+                          child: Text(
+                            'TOTAL AMOUNT',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 0.0, right: 40.0, top: 5),
+                          child: Text(
+                            'Rs. ${totalPrice}',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(
+                        thickness: 0.2,
+                        color: tertiary
+                    ),
+                  ],
                 ),
               ),
-
-
 
 
 
@@ -649,6 +845,11 @@ class _PaymentPageState extends State<PaymentPage> {
 
 
   getBottomBadge(context,size){
+    var priceItems = double.parse('${widget.finalPrice}').truncateToDouble();
+
+
+    double gst =  priceItems * 0.18;
+    var totalPrice = priceItems + gst;
     if(paymentMode==0){
       return Padding(
         padding: EdgeInsets.all(12.0),
@@ -670,7 +871,7 @@ class _PaymentPageState extends State<PaymentPage> {
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          widget.finalPrice,
+                          '${totalPrice}',
                           style: TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
@@ -704,22 +905,37 @@ class _PaymentPageState extends State<PaymentPage> {
 
                 var rand = new Random();
 
-                String finalNum = rand.nextInt(100000).toString() +
+                String orderId = rand.nextInt(100000).toString() +
                     rand.nextInt(10000).toString() +
                     rand.nextInt(1000000).toString();
 
+                 String notificationId = rand.nextInt(10000000).toString() +
+                     rand.nextInt(1000000).toString() +
+                     rand.nextInt(1000000).toString();
 
 
+                 otp = rand.nextInt(10000).toString();
+
+                 var priceItems = double.parse('${widget.finalPrice}').truncateToDouble();
+
+
+                 double gst =  priceItems * 0.18;
+                 double totalPrice = priceItems + gst;
+
+                 ///PICK UP MODE 0 IS SELF PICK UP
                  if(widget.pickUpMode==0){
+                   ///ADDING ORDER DETAILS TO ORDER COLLECTION
                    FirebaseFirestore.instance.collection('orders').add({
-                     'order_id' : finalNum,
+                     'order_id' : orderId,
                      'order_shop_id' : widget.shop.shop_id,
                      'order_shop_name' : widget.shop.shop_name,
                      'order_shop_logo' : widget.shop.shop_logo,
                      'order_shop_overall_rating' : widget.shop.shop_overall_rating,
                      'order_shop_location' : widget.shop.shop_location,
+                     'order_shop_token': widget.shop.token,
                      'order_by_name' : name,
                      'order_by_uid' : uid,
+                     'order_by_token': token,
                      'order_by_phone' : phone,
                      'order_total_price' : widget.finalPrice,
                      'order_total_quantity' : widget.totalItems,
@@ -727,11 +943,14 @@ class _PaymentPageState extends State<PaymentPage> {
                      'order_pickup_mode' : widget.pickUpMode,
                      'order_status' : 0,
                      'order_timestamp' : DateTime.now(),
-                     'order_payment_status': 0
+                     'order_payment_status': 0,
+                     'order_otp':otp
                    });
+
+                   ///ADDING ORDER ITMES
                    for (var orderItems in widget.orderList) {
                      FirebaseFirestore.instance.collection('order_items').add({
-                       'order_id': finalNum,
+                       'order_id': orderId,
                        'item_quantity': orderItems.quantity,
                        'item_name': orderItems.shopItems.item_name,
                        'item_price': orderItems.shopItems.item_price,
@@ -740,32 +959,81 @@ class _PaymentPageState extends State<PaymentPage> {
                      });
                    }
 
-                 }else
-                 if(widget.pickUpMode==1){
-                   FirebaseFirestore.instance.collection('orders').add({
-                     'order_id' :finalNum,
+
+                   ///ADDING NOTIFICATION DATA
+                   ///
+                   ///NOTIFICATION FOR SELLER
+                   FirebaseFirestore.instance.collection('notifications').add({
+                     'notification_id' : notificationId,
+                     'title' : 'New Order $orderId.',
+                     'description' : '$name has ordered ${widget.totalItems} items for Rs.${widget.finalPrice}. Order will be picked by $name himself.',
+                     'createdAt' : DateTime.now(),
+                     'platform': Platform.operatingSystem,
+                     'token': widget.shop.token,
+                     'order_id' : orderId,
                      'order_shop_id' : widget.shop.shop_id,
                      'order_shop_name' : widget.shop.shop_name,
                      'order_shop_logo' : widget.shop.shop_logo,
                      'order_shop_overall_rating' : widget.shop.shop_overall_rating,
                      'order_shop_location' : widget.shop.shop_location,
+                     'order_shop_token': widget.shop.token,
+                     'order_by_name' : name,
+                     'order_by_uid' : uid,
+                     'order_by_token': token,
+                     'order_by_phone' : phone,
+                     'order_total_price' : totalPrice.toString(),
+                     'order_total_quantity' : widget.totalItems,
+                     'order_payment_mode' : 0,
+                     'order_pickup_mode' : widget.pickUpMode,
+                     'order_status' : 0,
+                     'order_timestamp' : DateTime.now(),
+                     'order_payment_status': 0,
+                     'order_otp':otp
+                   });
+
+
+
+
+
+                 }
+
+                 else
+
+                 ///PICK UP MODE 1 IS FRIEND PICK UP
+                 if(widget.pickUpMode==1){
+
+                   ///ADDING ORDER DETAILS TO ORDER COLLECTION
+                   FirebaseFirestore.instance.collection('orders').add({
+                     'order_id' :orderId,
+                     'order_shop_id' : widget.shop.shop_id,
+                     'order_shop_name' : widget.shop.shop_name,
+                     'order_shop_logo' : widget.shop.shop_logo,
+                     'order_shop_overall_rating' : widget.shop.shop_overall_rating,
+                     'order_shop_location' : widget.shop.shop_location,
+                      'order_shop_token': widget.shop.token,
                      'order_by_name' : name,
                      'order_by_uid' : uid,
                      'order_by_phone' : phone,
+                     'order_by_token': token,
+                     'friend_uid': widget.userCustomModelFromPreviousDataFetch.id,
                      'friend_name': widget.userCustomModelFromPreviousDataFetch.name,
                      'friend_number':widget.userCustomModelFromPreviousDataFetch.phone,
                      'friend_college':widget.userCustomModelFromPreviousDataFetch.collegeName,
+                     'friend_token': widget.userCustomModelFromPreviousDataFetch.token,
                      'order_total_price' : widget.finalPrice,
                      'order_total_quantity' : widget.totalItems,
                      'order_payment_mode' : 0,
                      'order_pickup_mode' : widget.pickUpMode,
                      'order_status' : 0,
                      'order_timestamp' : DateTime.now(),
-                     'order_payment_status': 0
+                     'order_payment_status': 0,
+                     'order_otp':otp
                    });
+
+
                    for (var orderItems in widget.orderList) {
                      FirebaseFirestore.instance.collection('order_items').add({
-                       'order_id': finalNum,
+                       'order_id': orderId,
                        'item_quantity': orderItems.quantity,
                        'item_name': orderItems.shopItems.item_name,
                        'item_price': orderItems.shopItems.item_price,
@@ -773,6 +1041,78 @@ class _PaymentPageState extends State<PaymentPage> {
                        'item_type': orderItems.shopItems.item_type,
                      });
                    }
+
+
+                   ///ADDING NOTIFICATION DATA
+                   ///
+                   ///NOTIFICATION FOR SELLER
+                   FirebaseFirestore.instance.collection('notifications').add({
+                     'notification_id' : notificationId,
+                     'title' : 'New Order $orderId.',
+                     'description' : "$name has ordered ${widget.totalItems} items for Rs.${widget.finalPrice}. Order will be picked by $name's Friend ${widget.userCustomModelFromPreviousDataFetch.name}.",
+                     'createdAt' : DateTime.now(),
+                     'platform': Platform.operatingSystem,
+                     'token': widget.shop.token,
+                     'order_id' :orderId,
+                     'order_shop_id' : widget.shop.shop_id,
+                     'order_shop_name' : widget.shop.shop_name,
+                     'order_shop_logo' : widget.shop.shop_logo,
+                     'order_shop_overall_rating' : widget.shop.shop_overall_rating,
+                     'order_shop_location' : widget.shop.shop_location,
+                     'order_shop_token': widget.shop.token,
+                     'order_by_name' : name,
+                     'order_by_uid' : uid,
+                     'order_by_phone' : phone,
+                     'order_by_token': token,
+                     'friend_uid': widget.userCustomModelFromPreviousDataFetch.id,
+                     'friend_name': widget.userCustomModelFromPreviousDataFetch.name,
+                     'friend_number':widget.userCustomModelFromPreviousDataFetch.phone,
+                     'friend_college':widget.userCustomModelFromPreviousDataFetch.collegeName,
+                     'friend_token': widget.userCustomModelFromPreviousDataFetch.token,
+                     'order_total_price' : totalPrice.toString(),
+                     'order_total_quantity' : widget.totalItems,
+                     'order_payment_mode' : 0,
+                     'order_pickup_mode' : widget.pickUpMode,
+                     'order_status' : 0,
+                     'order_timestamp' : DateTime.now(),
+                     'order_payment_status': 0,
+                     'order_otp':otp
+                   });
+
+
+                   ///NOTIFICATION TO FRIEND
+                   FirebaseFirestore.instance.collection('notifications').add({
+                     'notification_id' : notificationId,
+                     'title' : 'Pick-Up request from $name.',
+                     'description' : '$name has requested to pick a order for them from ${widget.shop.shop_name} for Rs.${widget.finalPrice}.',
+                     'createdAt' : DateTime.now(),
+                     'platform': Platform.operatingSystem,
+                     'token': widget.userCustomModelFromPreviousDataFetch.token,
+                     'order_id' :orderId,
+                     'order_shop_id' : widget.shop.shop_id,
+                     'order_shop_name' : widget.shop.shop_name,
+                     'order_shop_logo' : widget.shop.shop_logo,
+                     'order_shop_overall_rating' : widget.shop.shop_overall_rating,
+                     'order_shop_location' : widget.shop.shop_location,
+                     'order_shop_token': widget.shop.token,
+                     'order_by_name' : name,
+                     'order_by_uid' : uid,
+                     'order_by_phone' : phone,
+                     'order_by_token': token,
+                     'friend_uid': widget.userCustomModelFromPreviousDataFetch.id,
+                     'friend_name': widget.userCustomModelFromPreviousDataFetch.name,
+                     'friend_number':widget.userCustomModelFromPreviousDataFetch.phone,
+                     'friend_college':widget.userCustomModelFromPreviousDataFetch.collegeName,
+                     'friend_token': widget.userCustomModelFromPreviousDataFetch.token,
+                     'order_total_price' : totalPrice.toString(),
+                     'order_total_quantity' : widget.totalItems,
+                     'order_payment_mode' : 0,
+                     'order_pickup_mode' : widget.pickUpMode,
+                     'order_status' : 0,
+                     'order_timestamp' : DateTime.now(),
+                     'order_payment_status': 0,
+                     'order_otp':otp
+                   });
                  }
 
 
@@ -809,7 +1149,7 @@ class _PaymentPageState extends State<PaymentPage> {
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          widget.finalPrice,
+                          '$totalPrice',
                           style: TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),

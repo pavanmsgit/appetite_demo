@@ -2,7 +2,7 @@ import 'package:appetite_demo/helpers/appBarDefault.dart';
 import 'package:appetite_demo/helpers/style.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animations/loading_animations.dart';
-import 'package:loading_overlay/loading_overlay.dart';
+
 
 
 class LoadingPage extends StatelessWidget {
@@ -14,6 +14,8 @@ class LoadingPage extends StatelessWidget {
         body: CustomScrollView(
           slivers: <Widget>[
             sliverAppBarDefault(size),
+            SliverPadding(padding: EdgeInsets.only(top: size.height/4)),
+
             SliverToBoxAdapter(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

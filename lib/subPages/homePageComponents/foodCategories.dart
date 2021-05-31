@@ -6,6 +6,7 @@ import 'package:appetite_demo/subPages/homePageComponents/listOfShops.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 Stream _getStream() {
   var qs = FirebaseFirestore.instance.collection("categories").snapshots();
@@ -48,7 +49,14 @@ Widget listOfCategories(BuildContext context) {
             ],
           );
         }
-        return LoadingPage();
+        return Center(
+          child: LoadingBouncingLine.square(
+            size: 60.0,
+            backgroundColor: tertiary,
+            borderColor: tertiary,
+            duration: Duration(milliseconds: 500),
+          ),
+        );
       });
 }
 

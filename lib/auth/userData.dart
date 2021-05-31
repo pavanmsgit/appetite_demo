@@ -22,7 +22,8 @@ class UserData {
       prefs.getString('name'),
       prefs.getString('email'),
       prefs.getString('photoUrl'),
-      prefs.getString('phone')
+      prefs.getString('phone'),
+      prefs.getString('token'),
     ];
   }
 
@@ -47,6 +48,7 @@ class UserData {
     prefs.setString('name', '');
     prefs.setString('email', '');
     prefs.setString('photoUrl', '');
+    prefs.setString('phone', '');
     prefs.setBool('loggedIn', false);
   }
 }

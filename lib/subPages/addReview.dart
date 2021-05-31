@@ -16,7 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class AddReview extends StatefulWidget {
-  AddReview({@required this.size, @required this.docId,@required this.ratings});
+  AddReview({this.size, @required this.docId,@required this.ratings});
   final Size size;
   final String docId;
   final double ratings;
@@ -35,8 +35,6 @@ class _AddReviewState extends State<AddReview> {
   TextEditingController controllerHeadline = TextEditingController();
   TextEditingController controllerDescription = TextEditingController();
 
-  List<String> data;
-  String uid, name, email, photoUrl;
 
   var imageFile;
 
@@ -46,6 +44,10 @@ class _AddReviewState extends State<AddReview> {
     getUserData();
     super.initState();
   }
+
+  List<String> data;
+  String uid, name, email, photoUrl, phone,token;
+
 
   //CHECKING USER DATA
   getUserData() async {
@@ -58,7 +60,10 @@ class _AddReviewState extends State<AddReview> {
     name = data[1];
     email = data[2];
     photoUrl = data[3];
+    phone = data[4];
+    token = data[5];
   }
+
 
   addBottomBadgeToAddItem() {
     if (controllerHeadline.text.isNotEmpty == true &&
@@ -116,7 +121,7 @@ class _AddReviewState extends State<AddReview> {
 
               FirebaseFirestore.instance.collection('shops').
               doc(widget.docId).
-              update({'shop_overall_rating' : customRating.truncateToDouble()});
+              update({'shop_overall_rating' : customRating});
 
 
               FirebaseFirestore.instance

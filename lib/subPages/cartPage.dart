@@ -51,13 +51,30 @@ class _CartPageState extends State<CartPage> {
   //Contact _contact;
 
   int a;
-  double totalPrice;
+  var totalPrice;
   bool isLoading = false;
 
 
 
   List<String> data;
-  String uid, name, email, photoUrl, phone;
+  String uid, name, email, photoUrl, phone,token;
+
+
+  //CHECKING USER DATA
+  getUserData() async {
+    data = await UserData().getUserData();
+    UserData().getUserData().then((result) {
+      setState(() => data = result);
+    });
+    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
+    uid = data[0];
+    name = data[1];
+    email = data[2];
+    photoUrl = data[3];
+    phone = data[4];
+    token = data[5];
+  }
+
 
   List<UserModelCustom> list = [];
 
@@ -69,19 +86,7 @@ class _CartPageState extends State<CartPage> {
     super.initState();
   }
 
-  //CHECKING USER DATA
-  getUserData() async {
-    data = await UserData().getUserData();
-    UserData().getUserData().then((result) {
-      setState(() => data = result);
-    });
-    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]} ${data[1]} ${data[2]} ${data[3]} ${data[4]}');
-    uid = data[0];
-    name = data[1];
-    email = data[2];
-    photoUrl = data[3];
-    phone = data[4];
-  }
+
 
 
   Future<List<UserModelCustom>> fetchData() async {
@@ -94,7 +99,7 @@ class _CartPageState extends State<CartPage> {
             value.docs[i]['user_location'],
             value.docs[i]['user_gender'],
             value.docs[i]['user_college_name'],
-            value.docs[i]['user_logo']);
+            value.docs[i]['user_logo'],value.docs[i]['token'],);
         list.add(userModelCustom);
         //print('HEY $list');
       }
@@ -262,8 +267,13 @@ class _CartPageState extends State<CartPage> {
 
     //a = int.parse(widget.finalPrice.trim());
 
-    var a = double.parse('${widget.finalPrice}');
-    totalPrice = a + a * 0.18;
+    var priceItems = double.parse('${widget.finalPrice}').truncateToDouble();
+
+
+    double gst =  priceItems * 0.18;
+     totalPrice = priceItems + gst;
+
+
 
 
     return LoadingOverlay(
@@ -283,9 +293,14 @@ class _CartPageState extends State<CartPage> {
             slivers: <Widget>[
               sliverAppBarDefaultWithBackButton(widget.size,context),
 
+
+              SliverPadding(
+                padding: EdgeInsets.all(0.0),
+              ),
+
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.all(15.0),
+                  padding: EdgeInsets.only(top: 15,bottom: 5),
                   child: Center(
                     child: ShaderMask(
                       shaderCallback: (bounds) => RadialGradient(
@@ -301,6 +316,35 @@ class _CartPageState extends State<CartPage> {
                   ),
                 ),
               ),
+
+
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                  child: ToggleSwitch(
+                      minWidth: widget.size.width * 0.7,
+                      inactiveBgColor: Colors.white,
+                      activeBgColor: Colors.black,
+                      initialLabelIndex: pickUpMode,
+                      fontSize: 11,
+                      cornerRadius: 20.0,
+                      labels: ['SELF PICK-UP', 'FRIEND PICK-UP'],
+                      onToggle: (index) => setState(() => pickUpMode = index)),
+                ),
+              ),
+
+
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  child: checkPickUpType(pickUpMode),
+                ),
+              ),
+
+              SliverPadding(
+                padding: EdgeInsets.all(10.0),
+              ),
+
 
               ///LIST OF CART ITEMS
               SliverList(
@@ -378,28 +422,108 @@ class _CartPageState extends State<CartPage> {
                 ),
               ),
 
+
+              ///ITEM TOTAL
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 30, left: 10, right: 10),
-                  child: ToggleSwitch(
-                      minWidth: widget.size.width * 0.7,
-                      inactiveBgColor: Colors.white,
-                      activeBgColor: Colors.black,
-                      initialLabelIndex: pickUpMode,
-                      fontSize: 11,
-                      cornerRadius: 20.0,
-                      labels: ['SELF PICK-UP', 'FRIEND PICK-UP'],
-                      onToggle: (index) => setState(() => pickUpMode = index)),
+                child: Column(
+                  children: [
+                    Divider(
+                        thickness: 0.2,
+                        color: tertiary
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 40.0, right: 20.0, top: 15),
+                          child: Text(
+                            'ITEM TOTAL',
+                            style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 0.0, right: 40.0, top: 15),
+                          child: Text(
+                            'Rs. ${priceItems}',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 40.0, right: 20.0, top: 10),
+                          child: Text(
+                            'GST & Other Taxes',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 0.0, right: 40.0, top: 15),
+                          child: Text(
+                            'Rs. ${gst}',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(
+                        thickness: 0.2,
+                        color: tertiary
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 40.0, right: 20.0, top: 5),
+                          child: Text(
+                            'TOTAL AMOUNT',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: 0.0, right: 40.0, top: 5),
+                          child: Text(
+                            'Rs. ${totalPrice}',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(
+                        thickness: 0.2,
+                        color: tertiary
+                    ),
+                  ],
                 ),
               ),
 
 
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  child: checkPickUpType(pickUpMode),
-                ),
-              ),
+
 
 
 
@@ -442,7 +566,7 @@ class _CartPageState extends State<CartPage> {
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '${totalPrice.truncate()}',
+                          '${totalPrice}',
                           style: TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
@@ -472,7 +596,7 @@ class _CartPageState extends State<CartPage> {
                 Navigator.of(context).push(changeScreenSide(PaymentPage(
                   orderList: widget.orderList,
                   size: widget.size,
-                  finalPrice: totalPrice.truncate().toString(),
+                  finalPrice: widget.finalPrice,
                   shop: widget.shop,
                   totalItems: widget.totalItems,
                   pickUpMode: 0,
@@ -502,7 +626,7 @@ class _CartPageState extends State<CartPage> {
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '${totalPrice.truncate()}',
+                          '${totalPrice}',
                           style: TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
@@ -535,7 +659,7 @@ class _CartPageState extends State<CartPage> {
                     userCustomModelFromPreviousDataFetch : list,
                     orderList: widget.orderList,
                     size: widget.size,
-                    finalPrice: totalPrice.truncate().toString(),
+                    finalPrice: widget.finalPrice,
                     shop: widget.shop,
                     totalItems: widget.totalItems,
                   )));

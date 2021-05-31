@@ -16,8 +16,7 @@ class PreHome extends StatefulWidget {
 }
 
 class _PreHomeState extends State<PreHome> {
-  List<String> data;
-  String uid, name, email, photoUrl;
+
 
   //INTIALIZE PAGE WITH USER DATA
   @override
@@ -25,6 +24,10 @@ class _PreHomeState extends State<PreHome> {
     getUserData();
     super.initState();
   }
+
+  List<String> data;
+  String uid, name, email, photoUrl, phone,token;
+
 
   //CHECKING USER DATA
   getUserData() async {
@@ -37,7 +40,10 @@ class _PreHomeState extends State<PreHome> {
     name = data[1];
     email = data[2];
     photoUrl = data[3];
+    phone = data[4];
+    token = data[5];
   }
+
 
   Stream _getStream() {
     var qs = FirebaseFirestore.instance

@@ -59,6 +59,7 @@ class _SearchPageState extends State<SearchPage> {
                     .snapshots()
                 : FirebaseFirestore.instance
                     .collection("shops")
+                     .limit(5)
                    // .where('shop_name_search', arrayContains: searchController.text)
                     .snapshots(),
             builder: (context, snapshot) {
@@ -203,7 +204,7 @@ class _SearchPageState extends State<SearchPage> {
                                     shop.shop_logo,
                                     width: size.width * 0.95,
                                     height: 100,
-                                    fit: BoxFit.fill,
+                                    fit: BoxFit.cover,
                                     //cancelToken: cancellationToken,
                                   ),
                                 ),

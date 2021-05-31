@@ -17,32 +17,40 @@ dependencies:
   animated_bottom_navigation_bar: ^0.3.2
   auto_size_text: ^2.1.0
   loading_overlay: ^0.2.1
-  #FIREBASE PLUGINS
-  firebase_auth: ^0.18.0+1
-  cloud_firestore: ^0.14.3
-  google_sign_in: ^4.5.3
-  google_sign_in_web: ^0.9.1+1
-  firebase_storage: ^4.0.0
-  firebase_core: ^0.5.0
-  cloud_firestore_web: ^0.2.0+1
+
+  firebase_auth: ^1.2.0   #updated
+  cloud_firestore: ^1.0.5 #updated
+  google_sign_in: ^4.5.3 #updated
+  google_sign_in_web: ^0.9.1+1 #updated
+  firebase_storage: any #updated
+  firebase_core: ^1.0.2 #updated
+
+  firebase_messaging: ^10.0.0
+  flutter_local_notifications: ^5.0.0
+
+  #maps
+  google_maps_flutter: ^2.0.3
+  geolocator: ^5.3.2+2
+  #location: ^4.1.1
+  #trust_location: ^2.0.13
+
   carousel_slider: ^2.3.1
-  bloc_pattern:
-  rxdart:
+  bloc_pattern: any
+  rxdart: any
   flutter_phoenix: ^0.1.0
   provider: ^4.3.2+1
   toggle_switch: ^0.1.9
   fluttertoast: ^8.0.6
   flutter_easyloading: ^3.0.0
-  intl:
+  intl: any
   anim_search_bar: ^2.0.1
-  permission_handler: ^5.0.1+1
+  permission_handler: any
   flutter_rating_bar: ^4.0.0
   url_launcher: ^6.0.3
   progress_dialog: ^1.2.4
   loading_animations: ^2.1.0
-  google_maps_flutter: ^2.0.3
-  geolocator: ^5.3.2+2
-  location: ^3.0.0
+
+  #PAYMENT API
   razorpay_flutter: ^1.2.2
   #STORAGE AND SHARED PREFERENCES
   shared_preferences: ^2.0.5

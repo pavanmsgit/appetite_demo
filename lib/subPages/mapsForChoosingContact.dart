@@ -13,7 +13,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:location/location.dart';
+//import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class MapsForChoosingContact extends StatefulWidget {
   MapsForChoosingContact(
@@ -36,30 +38,58 @@ class MapsForChoosingContact extends StatefulWidget {
 
 class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
   List<String> data;
-  String uid, name, email, photoUrl, phone;
+  String uid, name, email, photoUrl, phone,token;
 
-  var lat, lng;
+
+  //CHECKING USER DATA
+  getUserData() async {
+    data = await UserData().getUserData();
+    UserData().getUserData().then((result) {
+      setState(() => data = result);
+    });
+    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
+    uid = data[0];
+    name = data[1];
+    email = data[2];
+    photoUrl = data[3];
+    phone = data[4];
+    token = data[5];
+  }
+
+
+  var lat,lng;
+  //var lat=13.117436463163937, lng=77.6165259629488;
 
   bool isLoading = true;
 
   var userModelCustom;
+
+  Future<void> _launched;
+
+
+  Position _currentPosition;
+  final Geolocator geoLocator = Geolocator()..forceAndroidLocationManager;
 
   //INITIALIZE PAGE WITH USER DATA
   @override
   void initState() {
     getUserData();
     userModelCustom = widget.userCustomModelFromPreviousDataFetch;
-    getUserLocation();
+    addLocationLive();
+    //getUserLocation();
     markers = Set.from([]);
-    Location location = new Location();
-    location.getLocation().then((res) {
-      setState(() {
-        lat = res.latitude;
-        lng = res.longitude;
-      });
-      print('$lat $lng LAT AND LNG CHECK');
-    });
+
     super.initState();
+  }
+
+  Future addLocationLive() async{
+    geoLocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((position) {
+      setState(() {
+        _currentPosition = position;
+        lat = position.latitude;
+        lng = position.longitude;
+      });
+    });
   }
 
   GoogleMapController mapController;
@@ -74,7 +104,7 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
   Set<Marker> markers;
   GoogleMapController _mapController;
 
-  Future<LatLng> getUserLocation() async {
+  /*Future<LatLng> getUserLocation() async {
     LocationData locationFinal;
     Location location = new Location();
 
@@ -92,21 +122,16 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
       locationFinal = null;
       return null;
     }
+  }*/
+
+  Future<void> makePhoneCall(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
-  //CHECKING USER DATA
-  getUserData() async {
-    data = await UserData().getUserData();
-    UserData().getUserData().then((result) {
-      setState(() => data = result);
-    });
-    print('DATA CHECK FROM SHARED PREFERENCES ${data[0]}');
-    uid = data[0];
-    name = data[1];
-    email = data[2];
-    photoUrl = data[3];
-    phone = data[4];
-  }
 
   createMarker(context) {
     if (customMapMarker == null) {
@@ -306,7 +331,7 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
                       selectedUserDataModel.photo,
                       width: size.width * 0.95,
                       height: 100,
-                      fit: BoxFit.fill,
+                      fit: BoxFit.cover,
                       //cancelToken: cancellationToken,
                     ),
                   ),
@@ -348,6 +373,14 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
                     ],
                   ),
                 ),
+                trailing: IconButton(icon: Icon(Icons.phone,color: secondary,),onPressed: (){
+                  if(selectedUserDataModel.phone ==null){
+                    EasyLoading.showInfo('Can not call');
+                  }else{
+                    _launched = makePhoneCall('tel:${selectedUserDataModel.phone}');
+                  }
+                },
+                ),
               ),
             ),
 
@@ -364,20 +397,6 @@ class _MapsForChoosingContactState extends State<MapsForChoosingContact> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Rs. ',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '${widget.finalPrice}',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
                           Text(
                             "Proceed to Payment >>",
                             style: TextStyle(

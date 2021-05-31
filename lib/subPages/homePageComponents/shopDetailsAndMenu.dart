@@ -224,7 +224,7 @@ class _ShopDetailsAndMenuState extends State<ShopDetailsAndMenu>
                                       shop.shop_logo,
                                       width: size.width * 0.95,
                                       height: 200,
-                                      fit: BoxFit.fill,
+                                      fit: BoxFit.cover,
                                       //cancelToken: cancellationToken,
                                     ),
                                   ),
